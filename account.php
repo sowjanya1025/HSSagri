@@ -321,6 +321,44 @@ class account extends db_connect
 		$stmt->bindParam(":id", $del_id, PDO::PARAM_INT);
 		$stmt->execute();
 	} 
+	
+	public function create_Item($itm_name,$itm_code,$itm_qty,$itm_image)
+	{
+		$stmt=$this->db->prepare("INSERT INTO `items`(`item_name`, `item_code`, `item_quantity`, `item_image`) VALUES (:name,:code,:qty,:image)");
+		$stmt->bindParam(":name", $itm_name, PDO::PARAM_STR);
+		$stmt->bindParam(":code", $itm_code, PDO::PARAM_STR); // serial number 
+		$stmt->bindParam(":qty", $itm_qty, PDO::PARAM_STR);
+		$stmt->bindParam(":image", $itm_image, PDO::PARAM_STR);
+		if($stmt->execute())
+		{
+			$lastID = $this->db->lastInsertId();
+			
+		}
+		 $result = array('insert_last_id'=>$lastID);	
+		return $result;
+	
+	}
+	
+	public function check_itemAvailability($code)
+	{
+		$result=[];
+		$stmt = $this->db->prepare("SELECT * FROM `items` where item_code=(:id)");
+		$stmt->bindParam(':id',$code,PDO::PARAM_STR);
+		if($stmt->execute())
+		{
+			if($stmt->rowCount() > 0)
+			{
+				//$result = $stmt->fetch();
+				//$result = array("error"=>true,"errordesc"=>"code already exists");
+				$result = 1; // found
+			}else
+			{
+				///$result = array("error"=>false,"errordesc"=>"Available");
+				$result = 0; // not found
+			}
+		}
+		return $result;
+	}
 }// final end
 
 

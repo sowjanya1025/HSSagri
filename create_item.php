@@ -70,8 +70,13 @@ if(!empty($_POST))
   <link rel="stylesheet" href="css/style.css">
   <title>Create item codes</title>
   <style>
-    body { background-color: #fafafa;   .redtext{ color: red; .greentext{ color: green;} 
+    body 
+	{ 
+	background-color: #fafafa;
  }
+ 	.redtext{ color: red;} 
+	.greentext{ color: green;} 
+
   </style>
 </head>
 
@@ -97,36 +102,36 @@ if(!empty($_POST))
 	   {
 	  	 if($_GET['act']==1)
 		 {			 ?>
-	  		<div class="text-center"><b><span style="color:#009900">Registered Successfully</span></b></div>
+	  		<div class="text-center"><b><span style="color:#009900">Item created Successfully</span></b></div>
 	  <?php } } ?>
     <div class="container">
-        <form action="" method="post" enctype="multipart/form-data" >
+        <form action="" method="post" enctype="multipart/form-data" id="itemform" >
 		<input type="hidden" name="createitem" value="createitem">
             <div class="form-group">
                 <label for="item_name">Item:</label>
                 <input type="text" class="form-control" id="item_name"
                     placeholder="Enter Name" name="item_name" required >
-					<p id="name_err"></p>
+					<p id="item_nameerr"></p>
             </div>
 			<div class="form-group">
                 <label for="item_code">Item code:</label>
                 <input type="text" class="form-control" id="item_code"
                     placeholder="Enter Name" name="item_code" required>
-					<p id="name_err"></p>
+					<p id="item_codeerr"></p>
             </div>
 			<div class="form-group">
                 <label for="item_qty">Quantity:</label>
                 <input type="text" class="form-control" id="item_qty"
                     placeholder="Enter Name" name="item_qty"  required>
-					<p id="name_err"></p>
+					<p id="item_qtyerr"></p>
             </div>
 			<div class="form-group">
                 <label for="item_image">Image:</label>
                 <input type="file" class="form-control" id="item_image"
                      name="item_image" required >
-					<p id="cheque_err"></p>
+					<p id="item_imageerr"></p>
             </div>          
-		<input type="submit" id="submitbtn" value="Submit">
+		<input type="button" id="submitbtn" value="Submit">
         </form>
     </div>
     </div>
@@ -148,13 +153,97 @@ if(!empty($_POST))
       $("#sidebarCollapse").on('click',function() {
         $("#sidebar").toggleClass('active');
       });
-    });
-	
-	$(document).ready(function()
-	 {
-	$('#item_code').blur(function(e)
+	 
+	 $('#submitbtn').click(function(e){
+	 	let t_name = $("#item_name").val();
+		let t_code = $("#item_code").val();
+		let t_qty  = $("#item_qty").val();
+		let t_image = $("#item_image").val();
+		let namevalidator;
+		let codevalidator;
+		let qtyvalidator;
+		let imagevalidator;
+		
+	 
+                if(t_name=="")
+                {
+                  $('#item_nameerr').html('<span class="redtext">Name is required</span>');
+                  namevalidator = 1;
+                }else
+				{
+					$('#item_nameerr').html('');
+					 namevalidator = 0;
+				}
+                if(t_code=="")
+                {
+				  $('#item_codeerr').html('<span class="redtext">Code is required</span>');
+                  codevalidator = 1;
+                }else
+				{
+				  $('#item_codeerr').html('');
+                  codevalidator = 0;
+				}
+                if(t_qty=="")
+                {
+                  $('#item_qtyerr').html('<span class="redtext">Quantity is required</span>');
+                  qtyvalidator = 1;
+                }else
+				{
+                  $('#item_qtyerr').html('');
+                  qtyvalidator = 0;
+				}
+                if(t_image=="")
+                {
+                  $('#item_imageerr').html('<span class="redtext">Image is required</span>');
+                  imagevalidator = 1;
+                }else
+				{
+                  $('#item_imageerr').html('');
+                  imagevalidator = 0;
+				}
+				
+		//let itm_code = $(this).val();
+		if(t_code!=='')
+		{
+		$.ajax({
+			type:"post",
+			url:"check_itemAvailability.php",
+			data:{id:t_code},
+			//dataType: 'json',
+			success:function(response)
+			{
+				if(response == 1)
+				{
+					//alert("Code already exists"); 
+					$('#item_codeerr').html('<span class="redtext">Code already exists</span>');
+					codevalidator = 1;
+				}else if(response == 0)
+				{
+					$('#item_codeerr').html('<span class="greentext">Success!!</span>');
+					codevalidator = 0;
+				}
+			}
+		});
+		} // if
+		
+		if(namevalidator === 0 && codevalidator === 0 && qtyvalidator === 0 && imagevalidator === 0 )
+		 {
+			$('#itemform').submit();
+		 }
+		
+				
+				
+	 
+	 });
+	 
+
+
+	 
+/*	$('#item_code').blur(function(e)
 	{
 		let itm_code = $(this).val();
+		if(itm_code!=='')
+		{
 		$.ajax({
 			type:"post",
 			url:"check_itemAvailability.php",
@@ -164,15 +253,17 @@ if(!empty($_POST))
 			{
 				if(response == 1)
 				{
-					alert("Code already exists");
+					//alert("Code already exists"); 
+					$('#item_codeerr').html('<span class="redtext">Code already exists</span>');
 				}else if(response == 0)
 				{
-					alert("code is avaibale");
+					$('#item_codeerr').html('<span class="greentext">Success!!</span>');
 				}
 			}
 		});
+		}
 	});
-
+*/
 });
 
   </script>

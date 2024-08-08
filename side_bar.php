@@ -18,7 +18,7 @@
           </ul>
         </li>
 		<li>
-          <a href="#">Create item codes</a>
+          <a href="create_item.php">Create item codes</a>
         </li>
 		<li>
           <a href="#">Dump</a>
