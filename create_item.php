@@ -37,6 +37,7 @@ if(!empty($_POST))
 		}
 		
 		// end image upload///
+		
 		if($newfilename == '')
 		{
 				 //$account->create_Item($itm_name,$itm_code,$itm_qty,$newfilename);  // insert into db
