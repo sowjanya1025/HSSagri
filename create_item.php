@@ -26,19 +26,27 @@ if(!empty($_POST))
 		$newfilename="";
 		if($itm_image !='')
 		{
-			$allowedExts = array("jpg", "jpeg", "png","gif","pdf");
+			$allowedExts = array("jpg", "jpeg", "png","gif","webp");
 			$extension = pathinfo($itm_image, PATHINFO_EXTENSION);
 			if(in_array($extension, $allowedExts))
 			{
 				$temp = explode(".", $itm_image);
 				$newfilename = 'item'.$accountId.'_'.rand().'.'.end($temp);
-				move_uploaded_file($_FILES["item_image"]["tmp_name"],"images/" . $newfilename);
+				move_uploaded_file($_FILES["item_image"]["tmp_name"],"images/items/" . $newfilename);
 			}
 		}
 		
 		// end image upload///
-	 $account->create_Item($itm_name,$itm_code,$itm_qty,$newfilename);  // insert into db
-	 header("Location:create_item.php?act=1");
+		if($newfilename == '')
+		{
+				 //$account->create_Item($itm_name,$itm_code,$itm_qty,$newfilename);  // insert into db
+				 header("Location:create_item.php?act=2");
+		}
+		else
+		{
+				 $account->create_Item($itm_name,$itm_code,$itm_qty,$newfilename);  // insert into db
+				 header("Location:create_item.php?act=1");
+		}
 	}
 	
 }
@@ -103,7 +111,17 @@ if(!empty($_POST))
 	  	 if($_GET['act']==1)
 		 {			 ?>
 	  		<div class="text-center"><b><span style="color:#009900">Item created Successfully</span></b></div>
-	  <?php } } ?>
+	  <?php }  } ?>
+	  
+	  	
+	  	<?php   if(!empty($_GET['act']))
+	   {
+	  	 if($_GET['act']==2)
+		 {			 ?>
+	  		<div class="text-center"><b><span style="color:#FF0000">Error in Uploading the Item..</span></b></div>
+	  <?php } 
+	  } ?>
+
     <div class="container">
         <form action="" method="post" enctype="multipart/form-data" id="itemform" >
 		<input type="hidden" name="createitem" value="createitem">
