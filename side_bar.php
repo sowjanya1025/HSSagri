@@ -17,6 +17,13 @@
             <li><a href="cview.php">Company onboarding view</a></li>
           </ul>
         </li>
+		<li class="active">
+          <a href="#itemmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Item codes</a>
+          <ul class="collapse lisst-unstyled" id="itemmenu">
+            <li><a href="create_item.php">Create Item Codes</a></li>
+            <li><a href="view_items.php">View Item Codes</a></li>
+          </ul>
+        </li>
 		<li>
           <a href="create_item.php">Create item codes</a>
         </li>

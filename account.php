@@ -338,7 +338,27 @@ class account extends db_connect
 		return $result;
 	
 	}
+	public function get_create_ItemData()
+	{
+		$result=[];
+		$stmt = $this->db->prepare("select * from items");
+		if($stmt->execute())
+		{
+			if($stmt->rowCount() > 0)
+			{
+				$rows = $stmt->fetchAll();
+				foreach($rows as $frow)
+				{
+					$result[] = array("name"=>$frow['item_name'], 
+									"code"=>$frow['item_code'],
+									"image"=>$frow['item_image'],
+									"id"=>$frow['id']);
+				}
+			}
+		}
+		return $result;
 	
+	}
 	public function check_itemAvailability($code)
 	{
 		$result=[];
@@ -359,6 +379,23 @@ class account extends db_connect
 		}
 		return $result;
 	}
+	
+	public function update_resetToken($token,$expires,$femail)
+	{
+		
+		if($femail!="")
+		{
+			echo "here dss";
+			$stmt = $this->db->prepare("UPDATE `users` SET `reset_token`=(:token),`reset_expires`=(:expires) WHERE email = (:femail) ");
+			$stmt->bindParam(":token", $token, PDO::PARAM_STR);
+			$stmt->bindParam(":expires", $expires, PDO::PARAM_INT);
+			$stmt->bindParam(":femail", $femail, PDO::PARAM_STR);
+			$stmt->execute();
+		}
+		
+	}
+	
+	
 }// final end
 
 

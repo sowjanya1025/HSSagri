@@ -23,7 +23,7 @@ if(!empty($_POST))
 		print_r($_POST);
 		
 		// image upload
-		$newfilename="";
+/*		$newfilename="";
 		if($itm_image !='')
 		{
 			$allowedExts = array("jpg", "jpeg", "png","gif","webp");
@@ -35,17 +35,42 @@ if(!empty($_POST))
 				move_uploaded_file($_FILES["item_image"]["tmp_name"],"images/items/" . $newfilename);
 			}
 		}
-		
+*/		
 		// end image upload///
 		
-		if($newfilename == '')
+		// kyc multiple upload doc //
+	// Checks if user sent an empty form 
+	if(!empty(array_filter($_FILES['item_image']['name'])))
+	 {
+		// Loop through each file in files[] array
+		$itemfilename = "";
+		$itemFiles = [];
+		foreach ($_FILES['item_image']['tmp_name'] as $key => $value)
+			 {
+						$fileName = basename($_FILES['item_image']['name'][$key]);
+						$allowedExts = array("jpg", "jpeg", "png","gif","webp");
+						$extension = pathinfo($_FILES["item_image"]["name"][$key], PATHINFO_EXTENSION);
+						if(in_array($extension, $allowedExts))
+						{
+							$temp = explode(".", $_FILES["item_image"]["name"][$key]);
+							$itemfilename = 'item_'.$accountId.'_'.date("dmyhis").'_'.rand().'.'.end($temp);
+							move_uploaded_file($_FILES["item_image"]["tmp_name"][$key],"images/items/" . $itemfilename);
+							$itemFiles[] = $itemfilename;
+							//$account->setfarmer_Onboarding_kyc($kycfilename,$lastinsert,$accountId);  // insert into db
+					   }	 
+			}
+	  } 
+	// $itemFilesSerialized = serialize($itemFiles); 
+	 $itemFilesSerialized = json_encode($itemFiles); 
+		
+		if($itemFilesSerialized == '')
 		{
 				 //$account->create_Item($itm_name,$itm_code,$itm_qty,$newfilename);  // insert into db
 				 header("Location:create_item.php?act=2");
 		}
 		else
 		{
-				 $account->create_Item($itm_name,$itm_code,$itm_qty,$newfilename);  // insert into db
+				 $account->create_Item($itm_name,$itm_code,$itm_qty,$itemFilesSerialized);  // insert into db
 				 header("Location:create_item.php?act=1");
 		}
 	}
@@ -139,15 +164,9 @@ if(!empty($_POST))
 					<p id="item_codeerr"></p>
             </div>
 			<div class="form-group">
-                <label for="item_qty">Quantity:</label>
-                <input type="text" class="form-control" id="item_qty"
-                    placeholder="Enter Name" name="item_qty"  required>
-					<p id="item_qtyerr"></p>
-            </div>
-			<div class="form-group">
                 <label for="item_image">Image:</label>
                 <input type="file" class="form-control" id="item_image"
-                     name="item_image" required >
+                     name="item_image[]" multiple  required >
 					<p id="item_imageerr"></p>
             </div>          
 		<input type="button" id="submitbtn" value="Submit">
@@ -176,11 +195,11 @@ if(!empty($_POST))
 	 $('#submitbtn').click(function(e){
 	 	let t_name = $("#item_name").val();
 		let t_code = $("#item_code").val();
-		let t_qty  = $("#item_qty").val();
+	//	let t_qty  = $("#item_qty").val();
 		let t_image = $("#item_image").val();
 		let namevalidator;
 		let codevalidator;
-		let qtyvalidator;
+	//	let qtyvalidator;
 		let imagevalidator;
 		
 	 
@@ -202,7 +221,7 @@ if(!empty($_POST))
 				  $('#item_codeerr').html('');
                   codevalidator = 0;
 				}
-                if(t_qty=="")
+/*                if(t_qty=="")
                 {
                   $('#item_qtyerr').html('<span class="redtext">Quantity is required</span>');
                   qtyvalidator = 1;
@@ -211,7 +230,7 @@ if(!empty($_POST))
                   $('#item_qtyerr').html('');
                   qtyvalidator = 0;
 				}
-                if(t_image=="")
+*/                if(t_image=="")
                 {
                   $('#item_imageerr').html('<span class="redtext">Image is required</span>');
                   imagevalidator = 1;
@@ -233,22 +252,25 @@ if(!empty($_POST))
 			{
 				if(response == 1)
 				{
-					//alert("Code already exists"); 
 					$('#item_codeerr').html('<span class="redtext">Code already exists</span>');
 					codevalidator = 1;
 				}else if(response == 0)
 				{
 					$('#item_codeerr').html('<span class="greentext">Success!!</span>');
 					codevalidator = 0;
+					//alert("namevalidator="+namevalidator+"codevalidator="+codevalidator+"imagevalidator="+imagevalidator);
+					if(namevalidator === 0 && codevalidator === 0 && imagevalidator === 0 )
+					 {
+						$('#itemform').submit();
+					 }
+					
 				}
 			}
 		});
 		} // if
 		
-		if(namevalidator === 0 && codevalidator === 0 && qtyvalidator === 0 && imagevalidator === 0 )
-		 {
-			$('#itemform').submit();
-		 }
+		
+		
 		
 				
 				
