@@ -12,18 +12,18 @@ if(!isset($_SESSION['user_id']))
 $itemdata = $account->get_create_ItemData();
 //print_r($farmerdata);
 
-/*		if(isset($_POST['del_company']))
+		if(isset($_POST['del_item']))
 	{
 		$del_id = isset($_POST['del_cmp_id']) ? $_POST['del_cmp_id'] : '';
 		if($del_id!="")
 		{
-			$account->delete_company_ById($del_id);
-			header("Location:cview.php?act=del");
+			$account->delete_Item_ById($del_id);
+			header("Location:view_items.php?act=del");
 			exit;
 		} 
 		
 	}
-*/
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -60,7 +60,7 @@ $itemdata = $account->get_create_ItemData();
   <div class="wrapper">
    <nav id="sidebar">
       <div class="sidebar-header">
-        <h3>Lorem Ipsum</h3>
+         <h3>Veggies Basket</h3>
       </div><?php echo include'side_bar.php'; ?></nav>
     <div id="content">
       <nav class="navbar navbar-expand-lg">
@@ -73,6 +73,12 @@ $itemdata = $account->get_create_ItemData();
       <br><br>
 	   <h3>Items List</h3>
       <div id="carbon-block" class="my-3"></div>
+	  	  <?php if(!empty($_GET['act']))
+	   {
+	  	 if($_GET['act']=='del')
+		 {			 ?>
+	  		<div class="text-center"><b><span style="color:#009900">Item Deleted</span></b></div>
+	  <?php }  } ?>
     <div class="container">
 	<div class="table-responsive">
         <table class="table">
@@ -100,8 +106,8 @@ $itemdata = $account->get_create_ItemData();
 	  <td><?php echo htmlspecialchars($cdata['code']); ?></td>
       <td><?php echo htmlspecialchars($cdata['name']); ?></td>
 	   <td><img width="50" height="50" src="images/items/<?php echo $first_image; ?>" data-toggle='modal' data-target='#imagemodal' id='t_image' class='t_image'></td>
-	    <td><input type="button" name="delete" value="Delete" data-target='#delete_company' data-toggle='modal' 
-		class="deletecmpydata" id="<?php echo $cdata['id'] ?>">&nbsp;<a href="edit_company_onboarding.php?id=<?php echo $cdata['id'] ?>"><input type="button" name="edit" value="Edit"></a></td>
+	    <td><input type="button" name="delete" value="Delete" data-target='#delete_item' data-toggle='modal' 
+		class="deleteitemdata" id="<?php echo $cdata['id'] ?>"></td>
     </tr>
 	<?php }
   ?>
@@ -122,12 +128,12 @@ $itemdata = $account->get_create_ItemData();
 				</div>
 				
 				
-<div class="modal fade" id="delete_company" tabindex="-1" role="dialog" aria-labelledby="delete_company" aria-hidden="true">
+<div class="modal fade" id="delete_item" tabindex="-1" role="dialog" aria-labelledby="delete_item" aria-hidden="true">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content" >
 							<form action="<?php $_SERVER['PHP_SELF']?>" method="post">
 								<div class="modal-body">
-									<input autocomplete="off" type="hidden" id="del_company" name="del_company">
+									<input autocomplete="off" type="hidden" id="del_item" name="del_item">
 									<input autocomplete="off" type="hidden" id="del_cmp_id" name="del_cmp_id">
 									<h5 class="h5-responsive text-center">Are you sure that you want to delete this??</h5>
 								</div>	
@@ -160,7 +166,7 @@ $itemdata = $account->get_create_ItemData();
         $("#sidebar").toggleClass('active');
       });
 	  
-	 $('.deletecmpydata').click(function() { 
+	 $('.deleteitemdata').click(function() { 
 		let ccid = $(this).attr('id');
 		$('#del_cmp_id').val(ccid);
 		

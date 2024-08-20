@@ -56,13 +56,11 @@ if(!isset($_SESSION['user_id']))
       <h1>Dashboard</h1>
       <div id="carbon-block" class="my-3"></div>
 
-      <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vero ipsum cumque nemo architecto laboriosam perspiciatis consequatur atque quidem vel excepturi distinctio recusandae reprehenderit vitae, libero unde ea temporibus quaerat animi ducimus ratione esse? Aspernatur magnam facere suscipit vitae itaque maxime quo amet officiis animi, harum et inventore delectus nihil cumque!</p>
-
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni sit nostrum aliquid mollitia optio veniam at excepturi vitae sint laudantium fugit ratione molestias, doloremque cumque eaque eligendi nobis quia. Labore officiis quisquam officia dolore! Eos labore, alias, voluptatem maxime sunt culpa dolorum at quam architecto impedit cupiditate quis ipsum odit, necessitatibus accusantium quod quo molestias enim laboriosam! Maiores facere accusamus repellat saepe enim omnis perspiciatis dolor, cupiditate ex doloremque laudantium similique sunt quisquam! Quaerat, facere ipsum natus officia cupiditate repellendus.</p>
+      <p>"Welcome to the Veggies Basket Dashboard, your central hub for managing all aspects of your vegetable store. Here, you can easily oversee your product inventory, track customer orders, and analyze sales data to optimize your business. Let's help you deliver the freshest produce to your customers!"</p>
 
       <div class="line"></div>
-      <h3>Lorem Ipsum</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ratione voluptas consequuntur laboriosam quia vero corporis, officiis, dolore natus iste incidunt animi dolor porro accusamus similique aut, facilis architecto quas? Assumenda mollitia error vel blanditiis perferendis quis sequi deleniti repellat laboriosam!</p>
+      <h3>Support</h3>
+      <p>"Need help? Access our support resources or get in touch with our customer service team. We're here to assist you with any questions or issues you may encounter."</p>
 
     </div>
 

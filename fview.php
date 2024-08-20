@@ -56,7 +56,7 @@ $farmerdata = $account->getfarmer_OnBoardingData();
   <div class="wrapper">
    <nav id="sidebar">
       <div class="sidebar-header">
-        <h3>Lorem Ipsum</h3>
+         <h3>Veggies Basket</h3>
       </div><?php echo include'side_bar.php'; ?></nav>
     <div id="content">
       <nav class="navbar navbar-expand-lg">

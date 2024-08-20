@@ -136,7 +136,7 @@ if(!empty($_POST))
 		  <p id="loginmail_err"></p>
         </div>
         <div class="form-group">
-          <a class="pull-right" href="#">Forgot password?</a>
+          <a class="pull-right" href="forgot_password.php">Forgot password?</a>
           <label for="loginpassword">Password</label>
           <input type="password" class="form-control" id="loginpassword" name="loginpassword">
 		  <p id="loginpass_err"></p>

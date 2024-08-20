@@ -321,7 +321,13 @@ class account extends db_connect
 		$stmt->bindParam(":id", $del_id, PDO::PARAM_INT);
 		$stmt->execute();
 	} 
-	
+	public function delete_Item_ById($del_id)
+	{
+		$stmt=$this->db->prepare("DELETE FROM items  WHERE id = (:id) LIMIT 1");
+		$stmt->bindParam(":id", $del_id, PDO::PARAM_INT);
+		$stmt->execute();
+	} 
+
 	public function create_Item($itm_name,$itm_code,$itm_qty,$itm_image)
 	{
 		$stmt=$this->db->prepare("INSERT INTO `items`(`item_name`, `item_code`, `item_quantity`, `item_image`) VALUES (:name,:code,:qty,:image)");
@@ -385,7 +391,7 @@ class account extends db_connect
 		
 		if($femail!="")
 		{
-			echo "here dss";
+			//echo "here dss";
 			$stmt = $this->db->prepare("UPDATE `users` SET `reset_token`=(:token),`reset_expires`=(:expires) WHERE email = (:femail) ");
 			$stmt->bindParam(":token", $token, PDO::PARAM_STR);
 			$stmt->bindParam(":expires", $expires, PDO::PARAM_INT);
