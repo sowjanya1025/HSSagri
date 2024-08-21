@@ -7,9 +7,16 @@
             <li><a href="company_onboarding.php">Company onboarding</a></li>
           </ul>
         </li>
-        <li>
-          <a href="#">Client onboarding</a>
+		<li class="active">
+          <a href="#clientmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Client onboarding</a>
+          <ul class="collapse lisst-unstyled" id="clientmenu">
+            <li><a href="">Modern Traders</a></li>
+            <li><a href="">Oreca</a></li>
+			<li><a href="">General Traders</a></li>
+			<li><a href="">Retail Traders</a></li>
+          </ul>
         </li>
+
 		<li class="active">
           <a href="#viewmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">View</a>
           <ul class="collapse lisst-unstyled" id="viewmenu">
