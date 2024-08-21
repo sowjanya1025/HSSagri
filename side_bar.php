@@ -10,13 +10,12 @@
 		<li class="active">
           <a href="#clientmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Client onboarding</a>
           <ul class="collapse lisst-unstyled" id="clientmenu">
-            <li><a href="">Modern Traders</a></li>
+            <li><a href="moderntraders_onboarding.php">Modern Traders</a></li>
             <li><a href="">Oreca</a></li>
 			<li><a href="">General Traders</a></li>
 			<li><a href="">Retail Traders</a></li>
           </ul>
         </li>
-
 		<li class="active">
           <a href="#viewmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">View</a>
           <ul class="collapse lisst-unstyled" id="viewmenu">
