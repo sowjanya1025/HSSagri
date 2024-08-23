@@ -327,6 +327,13 @@ class account extends db_connect
 		$stmt->bindParam(":id", $del_id, PDO::PARAM_INT);
 		$stmt->execute();
 	} 
+	public function delete_Client_ById($del_id)
+	{
+		$stmt=$this->db->prepare("DELETE FROM client_onboarding  WHERE id = (:id) LIMIT 1");
+		$stmt->bindParam(":id", $del_id, PDO::PARAM_INT);
+		$stmt->execute();
+	} 
+
 
 	public function create_Item($itm_name,$itm_code,$itm_qty,$itm_image)
 	{
@@ -400,7 +407,120 @@ class account extends db_connect
 		}
 		
 	}
+	 public function setClient_Onboarding($clienttype,$clname,$contact,$email,$agreementcopynewfilename,$kycFilesSerialized,$acctname,$acctnumber,$ifsccode,$branchname,$cancelcheqnewfilename)
+	 {
+
+		$result = '';
+		//  code to fetch serail number and increment by 1//
+		$qry = $this->db->prepare("select cl_code from client_onboarding  order by id desc limit 1");
+		if($qry->execute())
+		{
+			if($qry->rowCount() > 0)
+			{
+				//echo "if cont";
+				$row = $qry->fetch();
+				$serialno = $row['cl_code'];
+				$number = (int)substr($serialno, 2); // Extract the numeric part
+        		$newNumber = $number + 1;
+				$newserailno =  sprintf('MT%03d',$newNumber);
+				//return 'C' . str_pad($newNumber, 3, '0', STR_PAD_LEFT); // 
+			}
+			else
+		  {
+			//echo "else cont";
+			$newserailno = 'MT001';
+		  }
+		}
+		// end code for serial number //
+		//echo $newserailno;
+		//exit;
+		$stmt=$this->db->prepare("INSERT INTO `client_onboarding`(`cl_clienttype`, `cl_code`,cl_name, `cl_mobile`, `cl_email`, `cl_kyc`, `cl_agreementcopy`, `cl_bank_acctholdername`, `cl_bank_acctnumber`, `cl_bank_ifsccode`, `cl_bank_branchname`, `cl_bank_cancelcheq`)
+		 VALUES (:clienttype,:fcode,:clname,:contact,:email,:kycFilesSerialized,:Agreementcopy,:acctname,:acctnumber,:ifsccode,:branchname,:cancelcheqnewfilename)");
+		
+		$stmt->bindParam(":clienttype", $clienttype, PDO::PARAM_INT);
+		$stmt->bindParam(":fcode", $newserailno, PDO::PARAM_STR); // serial number 
+		$stmt->bindParam(":clname", $clname, PDO::PARAM_STR);
+		$stmt->bindParam(":contact", $contact, PDO::PARAM_INT);
+		$stmt->bindParam(":email", $email, PDO::PARAM_STR);
+		$stmt->bindParam(":kycFilesSerialized", $kycFilesSerialized, PDO::PARAM_STR); 
+		$stmt->bindParam(":Agreementcopy", $agreementcopynewfilename, PDO::PARAM_STR);
+		$stmt->bindParam(":acctname", $acctname, PDO::PARAM_STR);
+		$stmt->bindParam(":acctnumber", $acctnumber, PDO::PARAM_STR);
+		$stmt->bindParam(":ifsccode", $ifsccode, PDO::PARAM_STR);
+		$stmt->bindParam(":branchname", $branchname, PDO::PARAM_STR);
+		$stmt->bindParam(":cancelcheqnewfilename", $cancelcheqnewfilename, PDO::PARAM_STR);
+		 
+		if($stmt->execute())
+		{
+			$lastID = $this->db->lastInsertId();
+			
+		}
+		 $result = array('insert_last_id'=>$lastID);	
+		return $result;
 	
+		 } 
+		 
+	public function getClient_OnBoardingData()
+	{
+		$result=[];
+		$stmt = $this->db->prepare("select * from client_onboarding");
+		if($stmt->execute())
+		{
+			if($stmt->rowCount() > 0)
+			{
+				$rows = $stmt->fetchAll();
+				foreach($rows as $frow)
+				{
+					$result[] = array("name"=>$frow['cl_name'], 
+									"code"=>$frow['cl_code'],
+									"mobile"=>$frow['cl_mobile'],
+									"email"=>$frow['cl_email'],
+									"id"=>$frow['id']);
+				}
+			}
+		}
+		return $result;
+	
+	}
+	public function getClient_OnBoardingData_ById($id)
+	{
+		$result=[];
+		$stmt = $this->db->prepare("SELECT * FROM `client_onboarding` where id=(:id)");
+		$stmt->bindParam(':id',$id,PDO::PARAM_INT);
+		if($stmt->execute())
+		{
+			if($stmt->rowCount() > 0)
+			{
+				$result = $stmt->fetch();
+			}
+		}
+		return $result;
+	
+	}
+	public function updateClient_Onboarding($id,$clname,$contact,$email,$agreementcopynewfilename,$kycFilesSerialized,$acctname,$acctnumber,$ifsccode,$branchname,$cancelcheqnewfilename)
+	{
+		
+		if($id!="")
+		{
+/*			echo "here dss";
+			echo $cancelcheqnewfilename;
+			exit;
+*/			$stmt = $this->db->prepare("UPDATE `client_onboarding` SET `cl_name`=(:name),`cl_mobile`=(:contact),`cl_email`=(:email),`cl_kyc`=(:kyc),`cl_agreementcopy`=(:agreementcopy),`cl_bank_acctholdername`=(:acctholdername),`cl_bank_acctnumber`=(:acctnumber),`cl_bank_ifsccode`=(:ifsccode),`cl_bank_branchname`=(:branchname),`cl_bank_cancelcheq`=(:cancelcheq) WHERE id = (:id)");
+			$stmt->bindParam(":name", $clname, PDO::PARAM_STR);
+			$stmt->bindParam(":contact", $contact, PDO::PARAM_INT);
+			$stmt->bindParam(":email", $email, PDO::PARAM_STR);
+			$stmt->bindParam(":agreementcopy", $agreementcopynewfilename, PDO::PARAM_STR);
+			$stmt->bindParam(":kyc", $kycFilesSerialized, PDO::PARAM_STR);
+			$stmt->bindParam(":acctholdername", $acctname, PDO::PARAM_STR);
+			$stmt->bindParam(":acctnumber", $acctnumber, PDO::PARAM_INT);
+			$stmt->bindParam(":ifsccode", $ifsccode, PDO::PARAM_STR);
+			$stmt->bindParam(":branchname", $branchname, PDO::PARAM_STR);
+			$stmt->bindParam(":cancelcheq", $cancelcheqnewfilename, PDO::PARAM_STR);
+			$stmt->bindParam(":id", $id, PDO::PARAM_INT);
+			$stmt->execute();
+		}
+		
+	}	
 	
 }// final end
 

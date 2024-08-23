@@ -1,5 +1,4 @@
-<ul class="lisst-unstyled components">
-        <p>Menu List</p>
+<ul class="lisst-unstyled components" >
         <li class="active">
           <a href="#foodSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Onboarding Menu</a>
           <ul class="collapse lisst-unstyled" id="foodSubmenu">
@@ -21,6 +20,7 @@
           <ul class="collapse lisst-unstyled" id="viewmenu">
             <li><a href="fview.php">Farmer onboarding view</a></li>
             <li><a href="cview.php">Company onboarding view</a></li>
+			<li><a href="client_onboarding_view.php">Client onboarding view</a></li>
           </ul>
         </li>
 		<li class="active">

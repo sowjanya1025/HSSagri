@@ -11,46 +11,50 @@ if(!isset($_SESSION['user_id']))
 	header("Location:index.php");
 }
 
+if(isset($_GET['id']))
+{
+	$id = $_GET['id'];
+	$individual_client_data = $account->getClient_OnBoardingData_ById($id);
+}
 
+//print_r($individual_farmer_data);
 if(!empty($_POST))
 {
 	if(isset($_POST['clientboardingform'])=='clientboardingform')
 	{
-		$clienttype = isset($_POST['clienttype'])? $_POST['clienttype'] : NULL;
+		$id = isset($_POST['clientid'])? $_POST['clientid'] : NULL;
 		$clname = isset($_POST['clname'])? $_POST['clname'] : NULL;
 		$contact = isset($_POST['contact'])? $_POST['contact'] : NULL;
 		$email = isset($_POST['email'])? $_POST['email'] : NULL;
-		$Agreementcopy=isset($_FILES['Agreementcopy']['name']) ? $_FILES['Agreementcopy']['name'] : NULL;
+		//$Agreementcopy=isset($_FILES['Agreementcopy']['name']) ? $_FILES['Agreementcopy']['name'] : NULL;
 		$acctname = isset($_POST['acctname'])? $_POST['acctname'] : NULL;
 		$acctnumber = isset($_POST['acctnumber'])? $_POST['acctnumber'] : NULL;
 		$ifsccode = isset($_POST['ifsccode'])? $_POST['ifsccode'] : NULL;
 		$branchname = isset($_POST['branchname'])? $_POST['branchname'] : NULL;
-		$cancelcheq = isset($_FILES['cancelcheq']['name']) ? $_FILES['cancelcheq']['name'] : NULL;
-		
-		// Agreementcopy upload
-		$agreementcopynewfilename="";
-		if($Agreementcopy !='')
+
+		$agreementcopynewfilename = $individual_client_data['cl_agreementcopy'];
+		$kycFiles = unserialize($individual_client_data['cl_kyc']);
+		$cancelcheqnewfilename = $individual_client_data['cl_bank_cancelcheq']; 
+
+		// agreement copy upload
+		if (!empty($_FILES["Agreementcopy"]["name"]))
 		{
 			$allowedExts = array("jpg", "jpeg", "png","gif");
-			$extension = pathinfo($Agreementcopy, PATHINFO_EXTENSION);
+			$extension = pathinfo($_FILES["Agreementcopy"]["name"], PATHINFO_EXTENSION);
 			if(in_array($extension, $allowedExts))
 			{
-				$temp = explode(".", $Agreementcopy);
+				$temp = explode(".", $_FILES["Agreementcopy"]["name"]);
 				$agreementcopynewfilename = 'cl_agrcopy_'.$accountId.'_'.rand().'.'.end($temp);
 				move_uploaded_file($_FILES["Agreementcopy"]["tmp_name"],"images/" . $agreementcopynewfilename);
 			}
 		}
-		// end Agreementcopy upload///
-		
-		//$insertID  = $account->setfarmer_Onboarding($fname,$contact,$email,$pan,$adhar,$newfilename);  // insert into db
-		//$lastinsert = $insertID['insert_last_id'];
-		
-		// kyc multiple upload doc //
+		  
+		// end agreement copy upload///
+
 	// Checks if user sent an empty form 
 	if(!empty(array_filter($_FILES['kyc']['name'])))
 	 {
 		// Loop through each file in files[] array
-		$kycfilename = "";
 		$kycFiles = [];
 		foreach ($_FILES['kyc']['tmp_name'] as $key => $value)
 			 {
@@ -60,43 +64,36 @@ if(!empty($_POST))
 						if(in_array($extension, $allowedExts))
 						{
 							$temp = explode(".", $_FILES["kyc"]["name"][$key]);
-							$kycfilename = 'cl_kyc'.$accountId.'_'.rand().'.'.end($temp);
+							$kycfilename = 'fr_kyc'.$accountId.'_'.rand().'.'.end($temp);
 							move_uploaded_file($_FILES["kyc"]["tmp_name"][$key],"images/" . $kycfilename);
 							$kycFiles[] = $kycfilename;
 							//$account->setfarmer_Onboarding_kyc($kycfilename,$lastinsert,$accountId);  // insert into db
 					   }	 
 			}
 	  } 
+	  // end kyc upload///////////////////
 	 $kycFilesSerialized = serialize($kycFiles);
-	 // end kyc ////////////
-	 
 	 ////////////////// cancel cheque ////////////
-		$cancelcheqnewfilename="";
-		if($cancelcheq !='')
+		if (!empty($_FILES["cancelcheq"]["name"]))
 		{
 			$allowedExts = array("jpg", "jpeg", "png","gif");
-			$extension = pathinfo($Agreementcopy, PATHINFO_EXTENSION);
+			$extension = pathinfo($_FILES["cancelcheq"]["name"], PATHINFO_EXTENSION);
 			if(in_array($extension, $allowedExts))
 			{
-				$temp = explode(".", $cancelcheq);
+				$temp = explode(".",$_FILES["cancelcheq"]["name"]);
 				$cancelcheqnewfilename = 'cl_calche_'.$accountId.'_'.rand().'.'.end($temp);
 				move_uploaded_file($_FILES["cancelcheq"]["tmp_name"],"images/" . $cancelcheqnewfilename);
 			}
 		}
 	 //////////////////end cancel cheque //////////
-	 $account->setClient_Onboarding($clienttype,$clname,$contact,$email,$agreementcopynewfilename,$kycFilesSerialized,$acctname,$acctnumber,$ifsccode,$branchname,$cancelcheqnewfilename);  // insert into db
-	 header("Location:moderntraders_onboarding.php?act=1");
-	 
-	 
+
+		$updateID  = $account->updateClient_Onboarding($id,$clname,$contact,$email,$agreementcopynewfilename,$kycFilesSerialized,$acctname,$acctnumber,$ifsccode,$branchname,$cancelcheqnewfilename);    // update into db
+		header("Location:edit_client_onboarding.php?id=$id");
 	}
 }
-
-
-
 ?>
 <!doctype html>
 <html lang="en">
-
 <head>
   <!-- Required meta tags -->
   <meta charset="utf-8">
@@ -117,7 +114,7 @@ if(!empty($_POST))
 
   <!-- css ekternal -->
   <link rel="stylesheet" href="css/style.css">
-  <title>ModernTraders Onboarding form</title>
+  <title>Edit Client Onboarding form</title>
   <style>
     body { background-color: #fafafa;   .redtext{ color: red; .greentext{ color: green;} 
  }
@@ -130,8 +127,7 @@ if(!empty($_POST))
    <nav id="sidebar">
       <div class="sidebar-header">
         <h3>Veggies Basket</h3>
-      </div>
-	  <?php echo require_once('side_bar.php'); ?></nav>
+      </div><?php echo include'side_bar.php'; ?></nav>
     <div id="content">
       <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
@@ -141,7 +137,7 @@ if(!empty($_POST))
         </div>
       </nav>
       <br><br>
-      <h2>ModernTraders Onboarding Form</h2>
+      <h2>Edit ModernTraders</h2>
       <div id="carbon-block" class="my-3"></div>
 	  <?php if(!empty($_GET['act']))
 	   {
@@ -151,35 +147,56 @@ if(!empty($_POST))
 	  <?php } } ?>
     <div class="container">
         <form action="" id="clientboardingform" method="post" enctype="multipart/form-data">
-		<input type="text" name="clientboardingform" value="clientboardingform">
-		<input type="text" name="clienttype" value="1">
+		<input type="hidden" name="clientboardingform" value="clientboardingform">
+		<input type="hidden" name="clientid" value="<?php echo $individual_client_data['id']; ?>">
+		<input type="hidden" name="clienttype" value="1">
             <div class="form-group">
                 <label for="fname">Client name:</label>
                 <input type="text" class="form-control" id="clname"
-                    placeholder="Enter Name" name="clname" required >
+                    placeholder="Enter Name" name="clname" value="<?php echo $individual_client_data['cl_name']; ?>" required >
 					<p id="name_err"></p>
             </div>
 			<div class="form-group">
                 <label for="contact">Mobile No:</label>
                 <input type="text" class="form-control" id="contact"
-                    placeholder="Enter Contact Number" name="contact" maxlength="10" required >
+                    placeholder="Enter Contact Number" name="contact" maxlength="10" value="<?php echo $individual_client_data['cl_mobile']; ?>" required >
 					<p id="contact_err"></p>
             </div>
             <div class="form-group">
                 <label for="email">Email Id:</label>
                 <input type="email" class="form-control" id="email"
-                    placeholder="Enter Email Id" name="email" required >
+                    placeholder="Enter Email Id" name="email" required value="<?php echo $individual_client_data['cl_email']; ?>" >
 					<p id="email_err"></p>
             </div>
 			<div class="form-group">
                 <label for="kyc">KYC documents:<i>(Adhar,Pan and Company details)</i></label>
+				<?php
+					// $kyc_doc = $individual_farmer_data['fr_kyc'];
+					 // $kyc_explode = explode(',', $kyc_doc);
+					  $kycFiles = unserialize($individual_client_data['cl_kyc']);
+					  foreach($kycFiles as $kyc)
+					  { 
+							$extension = pathinfo($kyc, PATHINFO_EXTENSION);
+						if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
+							echo "<img src='images/".htmlspecialchars($kyc)."' alt='Image' width='50' height='50' style='border:1px solid black'>";
+						} elseif ($extension == 'pdf') {
+							echo "<embed src='images/".htmlspecialchars($kyc)."' width='150' height='150' type='application/pdf' style='border:1px solid black'>";
+						} else {
+							echo "Unsupported file type.";
+						}
+						//echo "<br>";
+						echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+					} ?>
                 <input type="file" class="form-control" id="kyc"
-                    placeholder="Enter KYC" name="kyc[]" multiple required>
+                    placeholder="Enter KYC" name="kyc[]" multiple>
 					<p id="kyc_err"></p>
             </div>  
 			<div class="form-group">
                 <label for="Agreementcopy">Agreement Copy:</label>
-                <input type="file" class="form-control" id="Agreementcopy"   name="Agreementcopy" required >
+						<?php if(!empty($individual_client_data['cl_agreementcopy'])) {  ?>
+				<img src="images/<?php echo $individual_client_data['cl_agreementcopy']; ?>" style="border:1px solid black"  alt="Image" height="42" width="42">
+					<?php } ?>
+                <input type="file" class="form-control" id="Agreementcopy"   name="Agreementcopy">
 					<p id="image_err"></p>
             </div>	
 			<div class="form-group" style="border:0px solid #999999;">
@@ -187,30 +204,34 @@ if(!empty($_POST))
   <div class="form-group row" >
     <label for="acctname" class="col-sm-3 col-form-label">Account Holder Name:</label>
     <div class="col-sm-9">
-      <input type="text" class="form-control" id="acctname" name="acctname">
+      <input type="text" class="form-control" id="acctname" name="acctname" value="<?php echo $individual_client_data['cl_bank_acctholdername']; ?>">
     </div>
   </div>
   <div class="form-group row">
     <label for="acctnumber" class="col-sm-3 col-form-label">Account Number:</label>
     <div class="col-sm-9">
-      <input type="text" class="form-control" id="acctnumber" name="acctnumber">
+      <input type="text" class="form-control" id="acctnumber" name="acctnumber" value="<?php echo $individual_client_data['cl_bank_acctnumber']; ?>">
     </div>
   </div>
 <div class="form-group row">
     <label for="ifsccode" class="col-sm-3 col-form-label">IFSC Code:</label>
     <div class="col-sm-9">
-      <input type="text" class="form-control" id="ifsccode" name="ifsccode">
+      <input type="text" class="form-control" id="ifsccode" name="ifsccode" value="<?php echo $individual_client_data['cl_bank_ifsccode']; ?>">
     </div>
   </div>
 <div class="form-group row">
     <label for="branchname" class="col-sm-3 col-form-label">Branch Name:</label>
     <div class="col-sm-9">
-      <input type="text" class="form-control" id="branchname" name="branchname">
+      <input type="text" class="form-control" id="branchname" name="branchname" value="<?php echo $individual_client_data['cl_bank_branchname']; ?>">
     </div>
   </div>  <div class="form-group row">
     <label for="cancelcheq" class="col-sm-3 col-form-label">Cancel Cheque:</label>
     <div class="col-sm-9">
-      <input type="file" class="form-control" id="cancelcheq" name="cancelcheq">
+							<?php if(!empty($individual_client_data['cl_bank_cancelcheq'])) {  ?>
+				<img src="images/<?php echo $individual_client_data['cl_bank_cancelcheq']; ?>" style="border:1px solid black"  alt="Image" height="42" width="42">
+					<?php } ?>
+
+      <input type="file" class="form-control" id="cancelcheq" name="cancelcheq" value="<?php echo $individual_client_data['cl_bank_cancelcheq']; ?>">
     </div>
   </div>
 			</div>
@@ -238,7 +259,6 @@ if(!empty($_POST))
       });
     });
 	
-
   </script>
 </body>
 </html>
