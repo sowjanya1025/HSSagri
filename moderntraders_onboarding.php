@@ -36,7 +36,7 @@ if(!empty($_POST))
 			if(in_array($extension, $allowedExts))
 			{
 				$temp = explode(".", $Agreementcopy);
-				$agreementcopynewfilename = 'cl_agrcopy_'.$accountId.'_'.rand().'.'.end($temp);
+				$agreementcopynewfilename = 'mt_agrcopy_'.$accountId.'_'.rand().'.'.end($temp);
 				move_uploaded_file($_FILES["Agreementcopy"]["tmp_name"],"images/" . $agreementcopynewfilename);
 			}
 		}
@@ -60,7 +60,7 @@ if(!empty($_POST))
 						if(in_array($extension, $allowedExts))
 						{
 							$temp = explode(".", $_FILES["kyc"]["name"][$key]);
-							$kycfilename = 'cl_kyc'.$accountId.'_'.rand().'.'.end($temp);
+							$kycfilename = 'mt_kyc'.$accountId.'_'.rand().'.'.end($temp);
 							move_uploaded_file($_FILES["kyc"]["tmp_name"][$key],"images/" . $kycfilename);
 							$kycFiles[] = $kycfilename;
 							//$account->setfarmer_Onboarding_kyc($kycfilename,$lastinsert,$accountId);  // insert into db
@@ -79,7 +79,7 @@ if(!empty($_POST))
 			if(in_array($extension, $allowedExts))
 			{
 				$temp = explode(".", $cancelcheq);
-				$cancelcheqnewfilename = 'cl_calche_'.$accountId.'_'.rand().'.'.end($temp);
+				$cancelcheqnewfilename = 'mt_calche_'.$accountId.'_'.rand().'.'.end($temp);
 				move_uploaded_file($_FILES["cancelcheq"]["tmp_name"],"images/" . $cancelcheqnewfilename);
 			}
 		}
@@ -131,7 +131,7 @@ if(!empty($_POST))
       <div class="sidebar-header">
         <h3>Veggies Basket</h3>
       </div>
-	  <?php echo require_once('side_bar.php'); ?></nav>
+	  <?php require_once('side_bar.php'); ?></nav>
     <div id="content">
       <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
@@ -151,8 +151,8 @@ if(!empty($_POST))
 	  <?php } } ?>
     <div class="container">
         <form action="" id="clientboardingform" method="post" enctype="multipart/form-data">
-		<input type="text" name="clientboardingform" value="clientboardingform">
-		<input type="text" name="clienttype" value="1">
+		<input type="hidden" name="clientboardingform" value="clientboardingform">
+		<input type="hidden" name="clienttype" value="1">
             <div class="form-group">
                 <label for="fname">Client name:</label>
                 <input type="text" class="form-control" id="clname"

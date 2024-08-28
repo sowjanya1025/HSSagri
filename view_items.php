@@ -48,6 +48,8 @@ $itemdata = $account->get_create_ItemData();
 
   <!-- css ekternal -->
   <link rel="stylesheet" href="css/style.css">
+  	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+
   <title>View Page</title>
   <style>
     body { background-color: #fafafa;   .redtext{ color: red; .greentext{ color: green;} 
@@ -81,7 +83,7 @@ $itemdata = $account->get_create_ItemData();
 	  <?php }  } ?>
     <div class="container">
 	<div class="table-responsive">
-        <table class="table">
+        <table class="table hover" id="table"> <!-- stripe-->
   <thead class="thead-dark">
     <tr>
       <th scope="col">#</th>
@@ -160,8 +162,20 @@ $itemdata = $account->get_create_ItemData();
     <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script> 
     <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 <!--https://www.geeksforgeeks.org/form-validation-using-jquery/--> <!--// jquery validation code download-->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+
   <script>
+  $(function(){
+	$('#table').DataTable({
+    "pageLength": 10,
+	order: []
+});
+	$("#table_wrapper select").addClass("browser-default custom-select");
+	$(".custom-select").css("width", "40%" );
+});
     $(document).ready(function() {
+	
+	
       $("#sidebarCollapse").on('click',function() {
         $("#sidebar").toggleClass('active');
       });

@@ -16,6 +16,7 @@ if(!empty($_POST))
 	if(isset($_POST['createitem'])=='createitem')
 	{
 		$itm_name = isset($_POST['item_name'])? $_POST['item_name'] : NULL;
+		$item_category= isset($_POST['item_category'])? $_POST['item_category'] : NULL;
 		$itm_code = isset($_POST['item_code'])? $_POST['item_code'] : NULL;
 		$itm_qty = isset($_POST['item_qty'])? $_POST['item_qty'] : NULL;
 		$itm_image=isset($_FILES['item_image']['name']) ? $_FILES['item_image']['name'] : NULL;
@@ -70,14 +71,15 @@ if(!empty($_POST))
 		}
 		else
 		{
-				 $account->create_Item($itm_name,$itm_code,$itm_qty,$itemFilesSerialized);  // insert into db
+				 $account->create_Item($itm_name,$item_category,$itm_code,$itm_qty,$itemFilesSerialized);  // insert into db
 				 header("Location:create_item.php?act=1");
 		}
 	}
 	
 }
 
-
+$categories_list = $account->getCategories();
+//print_r($categories_list);
 ?>
 <!doctype html>
 <html lang="en">
@@ -102,6 +104,7 @@ if(!empty($_POST))
 
   <!-- css ekternal -->
   <link rel="stylesheet" href="css/style.css">
+  <!--https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_image_gallery //  code downloade -->
   <title>Create item codes</title>
   <style>
     body 
@@ -112,15 +115,66 @@ if(!empty($_POST))
 	.greentext{ color: green;} 
 
   </style>
+  <style>
+div.gallery {
+  border: 0px solid #ccc;
+}
+
+div.gallery:hover {
+  border: 0px solid #777;
+}
+
+div.gallery img {
+  width: 100%;
+  height: auto;
+}
+
+div.desc {
+  padding: 14px;
+  text-align: center;
+   overflow: auto;
+   height:110px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.responsive {
+  padding: 0 6px;
+  float: left;
+  width: 12.99999%;
+}
+
+@media only screen and (max-width: 700px) {
+  .responsive {
+    width: 24.99999%;
+    margin: 6px 0;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .responsive {
+    width: 24.99999%;
+  }
+}
+
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+</style>
 </head>
 
 <body>
+
   <!-- start wrapper -->
   <div class="wrapper">
    <nav id="sidebar">
       <div class="sidebar-header">
          <h3>Veggies Basket</h3>
-      </div><?php echo include'side_bar.php'; ?></nav>
+      </div><?php include'side_bar.php'; ?></nav>
     <div id="content">
       <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
@@ -130,9 +184,15 @@ if(!empty($_POST))
         </div>
       </nav>
       <br><br>
-      <h2>Create Item</h2>
+	  
       <div id="carbon-block" class="my-3"></div>
-	  <?php if(!empty($_GET['act']))
+
+    <div class="container" style="border:0px solid blue">
+	 <!-- Fruits and veg grid-->
+	<?php include'header_itemslist.php'; ?>
+	<!-- Fruits and veg grid-->
+      <br><br>
+	  	  <?php if(!empty($_GET['act']))
 	   {
 	  	 if($_GET['act']==1)
 		 {			 ?>
@@ -148,23 +208,34 @@ if(!empty($_POST))
 	  <?php } 
 	  } ?>
 
-    <div class="container">
+      <h2>Create Item</h2>
+
         <form action="" method="post" enctype="multipart/form-data" id="itemform" >
 		<input type="hidden" name="createitem" value="createitem">
             <div class="form-group">
                 <label for="item_name">Item:</label>
                 <input type="text" class="form-control" id="item_name"
-                    placeholder="Enter Name" name="item_name" required >
+                    placeholder="Enter item name" name="item_name" required ><i>(eg:Apple,Onions..)</i>
 					<p id="item_nameerr"></p>
+            </div>
+			  <div class="form-group">
+                <label for="item_category">Category:</label>
+				<select class="browser-default custom-select" name="item_category" id="item_category" required>
+					<option>Select Category</option>
+				<?php foreach($categories_list as $key=>$val){ ?>
+					<option value="<?php echo $val['id']; ?>"><?php echo ucfirst($val['categoryname']); ?></option>
+				<?php } ?>
+				</select>
+		<p id="item_nameerr"></p>
             </div>
 			<div class="form-group">
                 <label for="item_code">Item code:</label>
                 <input type="text" class="form-control" id="item_code"
-                    placeholder="Enter Name" name="item_code" required>
+                    placeholder="Enter Item Code" name="item_code" required><i>(eg:APP001,ONI001)</i>
 					<p id="item_codeerr"></p>
             </div>
 			<div class="form-group">
-                <label for="item_image">Image:</label>
+                <label for="item_image">Item Image:</label>
                 <input type="file" class="form-control" id="item_image"
                      name="item_image[]" multiple  required >
 					<p id="item_imageerr"></p>

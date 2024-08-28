@@ -335,9 +335,10 @@ class account extends db_connect
 	} 
 
 
-	public function create_Item($itm_name,$itm_code,$itm_qty,$itm_image)
+	public function create_Item($itm_name,$item_category,$itm_code,$itm_qty,$itm_image)
 	{
-		$stmt=$this->db->prepare("INSERT INTO `items`(`item_name`, `item_code`, `item_quantity`, `item_image`) VALUES (:name,:code,:qty,:image)");
+		$stmt=$this->db->prepare("INSERT INTO `items`(item_category,`item_name`, `item_code`, `item_quantity`, `item_image`) VALUES (:cat,:name,:code,:qty,:image)");
+		$stmt->bindParam(":cat", $item_category, PDO::PARAM_INT);
 		$stmt->bindParam(":name", $itm_name, PDO::PARAM_STR);
 		$stmt->bindParam(":code", $itm_code, PDO::PARAM_STR); // serial number 
 		$stmt->bindParam(":qty", $itm_qty, PDO::PARAM_STR);
@@ -381,13 +382,15 @@ class account extends db_connect
 		{
 			if($stmt->rowCount() > 0)
 			{
-				//$result = $stmt->fetch();
-				//$result = array("error"=>true,"errordesc"=>"code already exists");
-				$result = 1; // found
+				$record = $stmt->fetch();
+				$result = array('code'=>1,'itemid'=>$record['id']);
+				//$result=array('err_code'=>0,'err_msg'=>'','user_id'=>$row['id']);
+				//$result = 1; // found
 			}else
 			{
 				///$result = array("error"=>false,"errordesc"=>"Available");
-				$result = 0; // not found
+				$result = array('code'=>0,'itemid'=>'');
+				//$result = 0; // not found
 			}
 		}
 		return $result;
@@ -422,13 +425,13 @@ class account extends db_connect
 				$serialno = $row['cl_code'];
 				$number = (int)substr($serialno, 2); // Extract the numeric part
         		$newNumber = $number + 1;
-				$newserailno =  sprintf('MT%03d',$newNumber);
+				$newserailno =  sprintf('CL%03d',$newNumber);
 				//return 'C' . str_pad($newNumber, 3, '0', STR_PAD_LEFT); // 
 			}
 			else
 		  {
 			//echo "else cont";
-			$newserailno = 'MT001';
+			$newserailno = 'CL001';
 		  }
 		}
 		// end code for serial number //
@@ -460,10 +463,11 @@ class account extends db_connect
 	
 		 } 
 		 
-	public function getClient_OnBoardingData()
+	public function getClient_OnBoardingData($type)
 	{
 		$result=[];
-		$stmt = $this->db->prepare("select * from client_onboarding");
+		$stmt = $this->db->prepare("select * from client_onboarding where cl_clienttype = (:type) ");
+		$stmt->bindParam(":type", $type, PDO::PARAM_INT);
 		if($stmt->execute())
 		{
 			if($stmt->rowCount() > 0)
@@ -520,8 +524,81 @@ class account extends db_connect
 			$stmt->execute();
 		}
 		
-	}	
+	}
 	
+	public function getCategories()
+	{
+		$result=[];
+		$stmt = $this->db->prepare("SELECT * FROM `items_categories` ");
+		//$stmt->bindParam(':id',$id,PDO::PARAM_INT);
+		if($stmt->execute())
+		{
+			if($stmt->rowCount() > 0)
+			{
+				$row = $stmt->fetchAll();
+				foreach($row as $rows)
+				{
+					$result[] = array('id'=>$rows['id'],'categoryname'=>$rows['category_name']);
+				}
+			}
+		}
+		return $result;
+	}
+	
+	public function setGoodsReceive_note($farmer_id,$code,$itemcodeid,$f_price,$f_quaty,$f_totamt)
+	{
+		
+		$stmt=$this->db->prepare("INSERT INTO `goods_receive_note`(`farmers_id`, `items_code`, items_code_id, `quantity`, `price`,`totalamt`) VALUES (:farmers_id,:items_code,:items_code_id,:quantity,:price,:totalamt)");
+		
+		$stmt->bindParam(":farmers_id", $farmer_id, PDO::PARAM_INT);
+		$stmt->bindParam(":items_code", $code, PDO::PARAM_STR);
+		$stmt->bindParam(":items_code_id", $itemcodeid, PDO::PARAM_INT);
+		$stmt->bindParam(":quantity", $f_price, PDO::PARAM_STR); // serial number 
+		$stmt->bindParam(":price", $f_quaty, PDO::PARAM_STR);
+		$stmt->bindParam(":totalamt", $f_totamt, PDO::PARAM_STR);
+		if($stmt->execute())
+		{
+			$lastID = $this->db->lastInsertId();
+			
+		}
+		 $result = array('insert_last_id'=>$lastID);	
+		return $result;
+	
+	}
+		
+	public function getGoodsReceive_note()
+	{
+		$result=[];
+		$stmt = $this->db->prepare("SELECT grn.*,fb.fr_name , itm.item_code FROM `goods_receive_note` grn
+left join farmer_onboarding fb on fb.id = grn.farmers_id
+left join items itm on itm.id = grn.items_code_id;");
+		//$stmt->bindParam(':id',$id,PDO::PARAM_INT);
+		if($stmt->execute())
+		{
+			if($stmt->rowCount() > 0)
+			{
+				$row = $stmt->fetchAll();
+				foreach($row as $rows)
+				{
+					$result[] = array('id'=>$rows['id'],'farmers_name'=>$rows['fr_name'],'item_code'=>$rows['item_code'],'quantity'=>$rows['quantity'],'price'=>$rows['price'],'totamt'=>$rows['totalamt'],'approval_status'=>$rows['approval_status']);
+				}
+			}
+		}
+		return $result;
+	}
+	public function delete_GoodsReceive_note($del_id)
+	{
+		$stmt=$this->db->prepare("DELETE FROM goods_receive_note  WHERE id = (:id) LIMIT 1");
+		$stmt->bindParam(":id", $del_id, PDO::PARAM_INT);
+		$stmt->execute();
+	} 
+	public function approvalstatus_GoodsReceive_note($status,$id)
+	{
+		$stmt=$this->db->prepare("update goods_receive_note  set approval_status = (:status) WHERE id = (:id) LIMIT 1");
+		$stmt->bindParam(":status", $status, PDO::PARAM_INT);
+		$stmt->bindParam(":id", $id, PDO::PARAM_INT);
+		$stmt->execute();
+	} 
 }// final end
 
 

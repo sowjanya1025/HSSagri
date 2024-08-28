@@ -9,7 +9,7 @@ if(!isset($_SESSION['user_id']))
 	header("Location:index.php");
 }
 
-$clientdata = $account->getClient_OnBoardingData();
+$clientdata = $account->getClient_OnBoardingData($type=1);
  if(isset($_POST['del_client']))
 	{
 		$del_id = isset($_POST['del_clt_id']) ? $_POST['del_clt_id'] : '';

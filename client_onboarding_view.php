@@ -55,9 +55,9 @@ if(!isset($_SESSION['user_id']))
       <br><br>
       <div id="carbon-block" class="my-3"></div>
 	  <h3><span class="badge badge-secondary"><a href="view_moderntraders.php">Modern Traders</a></span></h3>
-	  <h3><span class="badge badge-secondary">Oreca</span></h3>
-	  <h3><span class="badge badge-secondary">General Traders</span></h3>
-	  <h3><span class="badge badge-secondary">Retail Traders</span></h3></p>
+	  <h3><span class="badge badge-secondary"><a href="view_oreca.php">Oreca</a></span></h3>
+	  <h3><span class="badge badge-secondary"><a href="view_generaltraders.php">General Traders</a></span></h3>
+	  <h3><span class="badge badge-secondary"><a href="view_retailtraders.php">Retail Traders</a></span></h3></p>
     </div>
 
   </div>

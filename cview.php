@@ -71,7 +71,7 @@ $companydata = $account->getcompany_OnBoardingData();
         </div>
       </nav>
       <br><br>
-	   <h3>Companies List</h3>
+	   <h3>Vendors List</h3>
       <div id="carbon-block" class="my-3"></div>
     <div class="container">
 	<div class="table-responsive">

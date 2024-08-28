@@ -88,7 +88,7 @@ if(!empty($_POST))
 	 //////////////////end cancel cheque //////////
 
 		$updateID  = $account->updateClient_Onboarding($id,$clname,$contact,$email,$agreementcopynewfilename,$kycFilesSerialized,$acctname,$acctnumber,$ifsccode,$branchname,$cancelcheqnewfilename);    // update into db
-		header("Location:edit_client_onboarding.php?id=$id");
+		header("Location:edit_client_onboarding.php?act=1&id=$id");
 	}
 }
 ?>
@@ -137,13 +137,13 @@ if(!empty($_POST))
         </div>
       </nav>
       <br><br>
-      <h2>Edit ModernTraders</h2>
+      <h2>Edit Page</h2>
       <div id="carbon-block" class="my-3"></div>
 	  <?php if(!empty($_GET['act']))
 	   {
 	  	 if($_GET['act']==1)
 		 {			 ?>
-	  		<div class="text-center"><b><span style="color:#009900">Registered Successfully</span></b></div>
+	  		<div class="text-center"><b><span style="color:#009900">Edited successfully</span></b></div>
 	  <?php } } ?>
     <div class="container">
         <form action="" id="clientboardingform" method="post" enctype="multipart/form-data">
@@ -235,7 +235,8 @@ if(!empty($_POST))
     </div>
   </div>
 			</div>
-			<input type="submit" id="submitbtn" value="Submit">
+			<input type="submit" id="submitbtn" value="Submit">&nbsp;
+			<input type="button" value="Back"  onclick="history.back()">
         </form>
     </div>
     </div>
