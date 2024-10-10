@@ -71,33 +71,15 @@ if(!empty($_POST))
 	  // end kyc upload///////////////////
 	 $kycFilesSerialized = serialize($kycFiles);
 		$updateID  = $account->updatefarmer_Onboarding($fid,$fname,$contact,$email,$pan,$adhar,$newfilename,$kycFilesSerialized);  // update into db
-		header("Location:edit_farmer_onboarding.php?id=$id");
+		header("Location:edit_farmer_onboarding.php?id=$id&act=1");
 	}
 }
 ?>
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
-
-  <!-- cdnjs.com / libraries / fontawesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-  <!-- Option 1: Include in HTML -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
-  <!-- js validation scripts -->
-	<!-- end js validation scripts --> 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" charset="utf-8"></script>
-
-  <!-- css ekternal -->
-  <link rel="stylesheet" href="css/style.css">
-  <title>Farmer Onboarding form</title>
+<?php require_once('header.php'); ?>
+  <title>Edit Farmer Onboarding form</title>
   <style>
     body { background-color: #fafafa;   .redtext{ color: red; .greentext{ color: green;} 
  }
@@ -107,10 +89,7 @@ if(!empty($_POST))
 <body>
   <!-- start wrapper -->
   <div class="wrapper">
-   <nav id="sidebar">
-      <div class="sidebar-header">
-        <h3>Veggies Basket</h3>
-      </div><?php echo include'side_bar.php'; ?></nav>
+    <?php require_once('side_bar.php'); ?>
     <div id="content">
       <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
@@ -121,25 +100,26 @@ if(!empty($_POST))
       </nav>
       <br><br>
       <h2>Edit Farmer details</h2>
+	 <button class="btn btn-dark"><a href="fview.php">Back</a></button>
       <div id="carbon-block" class="my-3"></div>
 	  <?php if(!empty($_GET['act']))
 	   {
 	  	 if($_GET['act']==1)
 		 {			 ?>
-	  		<div class="text-center"><b><span style="color:#009900">Registered Successfully</span></b></div>
+	  		<div class="text-center"><b><span style="color:#009900">Saved changes Successfully</span></b></div>
 	  <?php } } ?>
     <div class="container">
         <form action="#" id="farmerboardingform" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="farmerboarding" value="farmerboarding">
 		<input type="hidden" name="farmerid" value="<?php echo $individual_farmer_data['id']; ?>">
             <div class="form-group">
-                <label for="fname">Name:</label>
+                <label for="fname" class="control-label required">Name:</label>
                 <input type="text" class="form-control" id="fname"
                     placeholder="Enter Name" name="fname" value="<?php echo $individual_farmer_data['fr_name']; ?>" >
 					<p id="name_err"></p>
             </div>
 			<div class="form-group">
-                <label for="contact">Mobile No:</label>
+                <label for="contact" class="control-label required">Mobile No:</label>
                 <input type="text" class="form-control" id="contact"
                     placeholder="Enter Contact Number" name="contact" maxlength="10" value="<?php echo $individual_farmer_data['fr_contact']; ?>" >
 					<p id="contact_err"></p>
@@ -157,7 +137,7 @@ if(!empty($_POST))
 					<p id="pan_err"></p>
             </div>
 			<div class="form-group">
-                <label for="adhar">Adhar details:</label>
+                <label for="adhar" class="control-label required">Adhar details:</label>
                 <input type="text" class="form-control" id="adhar"
                     placeholder="Enter Adhar Id" name="adhar" value="<?php echo $individual_farmer_data['fr_adhar']; ?>" >
 					<p id="adhar_err"></p>
@@ -165,7 +145,7 @@ if(!empty($_POST))
 			<div class="form-group">
                 <label for="image">Image Upload:</label>
 						<?php if(!empty($individual_farmer_data['fr_image'])) {  ?>
-				<img src="images/<?php echo $individual_farmer_data['fr_image']; ?>" style="border:1px solid black"  alt="Image" height="42" width="42">
+				<img src="images/<?php echo $individual_farmer_data['fr_image']; ?>" style="border:1px solid black" alt="" height="42" width="42" ><a href="images/<?php echo $individual_farmer_data['fr_image']; ?>" target='_blank' id='fileLink'>Open Image</a>
 					<?php } ?>
 		<input type="hidden" id="" name="image1" value="<?php if(isset($individual_farmer_data['fr_image'])) { echo $individual_farmer_data['fr_image'];  }  ?>" />
                 <input type="file" class="form-control" id="image"
@@ -178,23 +158,26 @@ if(!empty($_POST))
 					// $kyc_doc = $individual_farmer_data['fr_kyc'];
 					 // $kyc_explode = explode(',', $kyc_doc);
 					  $kycFiles = unserialize($individual_farmer_data['fr_kyc']);
+					  if(!empty($kycFiles))
+					  {
 					  foreach($kycFiles as $kyc)
 					  { 
 							$extension = pathinfo($kyc, PATHINFO_EXTENSION);
 						if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
-							echo "<img src='images/".htmlspecialchars($kyc)."' alt='Image' width='50' height='50'>";
+							echo "<a href='images/".htmlspecialchars($kyc)."' target='_blank' id='fileLink'><img src='images/".htmlspecialchars($kyc)."' alt='' onclick='window.open(this.src, '_blank');' width='50' height='50' style='border:1px solid black'>Open Image</a>";
 						} elseif ($extension == 'pdf') {
-							echo "<embed src='images/".htmlspecialchars($kyc)."' width='150' height='150' type='application/pdf'>";
+							echo "<embed src='images/".htmlspecialchars($kyc)."' width='150' height='150' type='application/pdf'><a href='images/".htmlspecialchars($kyc)."' target='_blank' id='fileLink'>click to open</a>";
 						} else {
 							echo "Unsupported file type.";
 						}
 						//echo "<br>";
 						echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-					} ?>
+					} } ?>
 					  
 	                <input type="file" class="form-control" id="kyc"
                     placeholder="Enter Adhar Id" name="kyc[]" multiple>
 					<p id="kyc_err"></p>
+					<ul id="fileNames"></ul>
             </div>          
 		<input type="button" id="submitbtn" value="Submit">
         </form>
@@ -202,15 +185,7 @@ if(!empty($_POST))
     </div>
 
   </div>
-  <!-- wrapper and -->
-
-
-  <!-- Option 2: jQuery, Popper.js, and Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script> 
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+<?php require_once('footer.php'); ?>
 <!--https://www.geeksforgeeks.org/form-validation-using-jquery/--> <!--// jquery validation code download-->
   <script>
   
@@ -293,6 +268,22 @@ if(!empty($_POST))
 		}
 	
 	});
+	
+		$('#kyc').on('change',function()
+	 {
+		const fileNamesList = document.getElementById('fileNames');
+        fileNamesList.innerHTML = ''; // Clear the list before adding new items
+        const files = event.target.files;
+
+        // Loop through the selected files and display their names
+        for (let i = 0; i < files.length; i++) {
+            const li = document.createElement('li');
+            li.textContent = files[i].name;
+            fileNamesList.appendChild(li);
+        }
+	
+	   });
+
 
 });
 

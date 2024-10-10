@@ -18,7 +18,9 @@ if(!isset($_SESSION['user_id']))
 	header("Location:index.php");
 }
 
-$farmerdata = $account->getfarmer_OnBoardingData();
+
+/// GRN -  default value is 2(pending) ,  1(approved) , 0(rejected)///
+$farmerdata = $account->getAllfarmers_OnBoardingData();
 
 if(!empty($_POST))
 {
@@ -26,25 +28,16 @@ if(!empty($_POST))
 	{
 	
 	$farmer_id = isset($_POST['farmers_list'])? $_POST['farmers_list'] : NULL;  
-	$farmersname = isset($_POST['farmersname'])? $_POST['farmersname'] : NULL;  
+	$collection_center =  isset($_POST['ccenter'])? $_POST['ccenter'] : NULL;  
+	$farmersname = isset($_POST['farmersname'])? $_POST['farmersname'] : NULL; 
+	$itemname = isset($_POST['itemname'])? $_POST['itemname'] : NULL;  
 	$code = isset($_POST['itemcode'])? $_POST['itemcode'] : NULL; 
 	$itemcodeid = isset($_POST['itemcodeid'])? $_POST['itemcodeid'] : NULL; 
 	$price = isset($_POST['price']) ? floatval($_POST['price']) : 0;
     $quantity = isset($_POST['quantity']) ? floatval($_POST['quantity']) : 0;
-    $total = $price * $quantity;
+	$total =  isset($_POST['totalamt']) ? intval($_POST['totalamt']) : 0;
 	
-	
-	$f_price = $price;
-	$f_quaty =  $quantity;
-	$f_totamt = $total;
-	
-	
-/* echo "Price: " . number_format($price, 2) . "<br>";
-    echo "Quantity: " . $quantity . "<br>";
-    echo "Total Amount: " . number_format($total, 2) . "<br>";
-*/	
-	
-	$lastid = $account->setGoodsReceive_note($farmer_id,$code,$itemcodeid,$f_price,$f_quaty,$f_totamt);
+	$lastid = $account->setGoodsReceive_note($accountId,$farmer_id,$collection_center,$itemname,$code,$itemcodeid,$price,$quantity,$total);
 	$insertedid =  $lastid['insert_last_id'];
 	///////////////php mail///////////
 	
@@ -56,18 +49,21 @@ $mail = new PHPMailer(true);
 
 try {
     // Server settings
-    $mail->SMTPDebug = 0; // Set to 2 for detailed debug output
- //   $mail->isSMTP(); // Use SMTP
-    $mail->Host = 'smtp.gmail.com';          // Set the SMTP server to send through
-    $mail->SMTPAuth = true; // Enable SMTP authentication
-	$mail->Username = 'swjnambati@gmail.com';          
-	$mail->Password = '1sridhar25sowjanya'; 
-	$mail->SMTPSecure = '';                  
-	$mail->Port = 587;                          
+
+$mail->SMTPDebug = 0; // Enable detailed debug output
+$mail->isSMTP(); // Use SMTP
+$mail->Host = 'mail.hssagri.in'; // Set the SMTP server to send through
+$mail->SMTPAuth = true; // Enable SMTP authentication
+$mail->Username = 'admin@hssagri.in'; // SMTP username
+$mail->Password = '}RNxK^pq$NNc';  // SMTP password
+$mail->SMTPSecure = 'tls';
+$mail->Port = 587;
+
 
     // Recipients
-    $mail->setFrom('swjnambati@gmail.com', 'Veggiesbasket');
-    $mail->addAddress('swjnambati@gmail.com', 'Veggiesbasket'); // Add a recipient
+    $mail->setFrom('admin@hssagri.in', 'Hssagri');
+	$mail->addAddress('msatest200@gmail.com', 'Hssagri'); // Add a recipient
+   // $mail->addAddress('swjnambati@gmail.com', 'Hssagri'); // Add a recipient
     // $mail->addReplyTo('info@example.com', 'Information'); // Optional reply-to address
     // $mail->addCC('cc@example.com'); // Optional CC
     // $mail->addBCC('bcc@example.com'); // Optional BCC
@@ -78,44 +74,45 @@ try {
 
     // Content
     $mail->isHTML(true); // Set email format to HTML
-    $mail->Subject = 'Notification from Veggiesbasket';
+    $mail->Subject = 'Notification from Hssagri.in';
    // $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
    // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 	// Buttons with links to approval/rejection script
-    $approveLink = 'https://localhost/greenbasket/handle-approval.php?action=approve&user_id='.$insertedid.'';
-    $rejectLink = 'https://localhost/greenbasket/handle-approval.php?action=reject&user_id='.$insertedid.'';
+    $approveLink = 'https://hssagri.in/handle-approval.php?action=approve&user_id='.$insertedid.'';
+    $rejectLink = 'https://hssagri.in/handle-approval.php?action=reject&user_id='.$insertedid.'';
 	
 					$bodyContent = "<p>Hi,</p>
-					<p><b>Warm greetings from Veggiesbasket!</b></p>
+					<p><b>Warm greetings from Hssagri.in!</b></p>
 					<p><b>Below are the details from Goods Receive Note. </b></p>
 					
 					Farmer Name : ".$farmersname."<br/>
 					Item Code : ".$code."<br/>
-					Item Quantity : ".$f_quaty."<br/>
-					Item Price : &#8377;".$f_price."<br/>
-					Total Amount : &#8377;".$f_totamt."<br/>
+					Item Quantity : ".$quantity."<br/>
+					Item Price : &#8377;".$price."<br/>
+					Total Amount : &#8377;".$total."<br/>
 
 					<p>Please approve or reject this request:</p>
 					<a href='$approveLink' style='padding:10px;background-color:green;color:white;text-decoration:none;'>Approve</a>
 					<a href='$rejectLink' style='padding:10px;background-color:red;color:white;text-decoration:none;'>Reject</a>
    
-					<p>Best Regards,<br/>Veggiesbasket Team</p>";
+					<p>Best Regards,<br/>Hssagri.in Team</p>";
 
 				//	$mail->Subject = 'Password reset link from MySportsArena';
 					$mail->Body    = $bodyContent;
 
     // Send the email
     $mail->send();
-    echo 'Message has been sent';
+   // echo 'Message has been sent';
 } catch (Exception $e) {
-    echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    //echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
 }
 //exit;
 	////////////////////end php mail //////////
 	
 	
 	// $account->setClient_Onboarding($clienttype,$clname,$contact,$email,$agreementcopynewfilename,$kycFilesSerialized,$acctname,$acctnumber,$ifsccode,$branchname,$cancelcheqnewfilename);  // insert into db
-	 header("Location:goodsreceivenote.php");
+	 header("Location:goodsreceivenote.php?act=1");
+	 exit;
 	 
 	 
 	}
@@ -128,26 +125,9 @@ try {
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
-
-  <!-- cdnjs.com / libraries / fontawesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-  <!-- Option 1: Include in HTML -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
-  <!-- js validation scripts -->
-	<!-- end js validation scripts --> 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" charset="utf-8"></script>
-
-  <!-- css ekternal -->
-  <link rel="stylesheet" href="css/style.css">
-  <title>RetailTraders Onboarding form</title>
+<?php require_once('header.php'); ?>
+  <title>GRN</title>
+      <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <style>
     body { background-color: #fafafa;   .redtext{ color: red; .greentext{ color: green;} 
  }
@@ -157,11 +137,7 @@ try {
 <body>
   <!-- start wrapper -->
   <div class="wrapper">
-   <nav id="sidebar">
-      <div class="sidebar-header">
-        <h3>Veggies Basket</h3>
-      </div>
-	  <?php require_once('side_bar.php'); ?></nav>
+    <?php require_once('side_bar.php'); ?>
     <div id="content">
       <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
@@ -184,9 +160,9 @@ try {
 		<input type="hidden" name="goodsreceivenote" value="goodsreceivenote">
 		<input type="hidden" name="clienttype" value="4">
             <div class="form-group">
-                <label for="farmers_list">Onboarded Farmers List:</label>
+                <label for="farmers_list" class="control-label required">Onboarded Farmers List:</label>
 					<select class="browser-default custom-select" name="farmers_list" id="farmers_list" required oninput="setfarmersname()">
-						<option>-Select Farmers-</option>
+						<option value="" disabled="disabled" selected="selected">-Select Farmers-</option>
 					  	<?php foreach($farmerdata as $fdata) 
 						{  ?>
 					<option value="<?php echo $fdata['id'] ?>"><?php echo $fdata['fname'] ?></option>
@@ -195,20 +171,31 @@ try {
 				<input type="hidden" name="farmersname" id="farmersname" value="">
             </div>
 			<div class="form-group">
-                <label for="itemcode">Enter Item Code:</label>
+                <label for="quantity" class="control-label">Enter Collection Center:</label>
+                <input type="text" class="form-control" id="ccenter"
+                    placeholder="Enter Collection center" name="ccenter">
+            </div>
+			<div class="form-group">
+                <label for="itemcode" class="control-label required">Enter Item Name:</label>
+                <input type="text" class="form-control" id="itemname"
+                    placeholder="Enter Item Name" name="itemname" maxlength="10" required autocomplete="off" ><i>[To create new items <a href="create_item.php" style="color:#009933">Click here</a>]</i>
+					<p id="item_nameerr"></p>
+            </div>	
+			<div class="form-group">
+                <label for="itemcode" class="control-label required">Enter Item Code:</label>
                 <input type="text" class="form-control" id="itemcode"
-                    placeholder="Enter Item Code" name="itemcode" maxlength="10" required >
+                    placeholder="Enter Item Code" name="itemcode" maxlength="10" required readonly>
 					<p id="item_codeerr"></p>
 					<input type="hidden" name="code_check" id="code_check" value="">
 					<input type="hidden" name="itemcodeid" id="itemcodeid" value="">
             </div>
             <div class="form-group">
-                <label for="quantity">Enter Quantity:</label>
+                <label for="quantity" class="control-label required">Enter Quantity:</label>
                 <input type="number" class="form-control" id="quantity"
                     placeholder="Enter Quantity" name="quantity" step="0.01" required oninput="calculateTotal()" ><i>(in kgs)</i>
             </div>
             <div class="form-group">
-                <label for="price">Enter Price:</label>
+                <label for="price" class="control-label required">Enter Price:</label>
                 <input type="number" class="form-control" id="price"
                     placeholder="Enter Price" name="price"  step="0.01" required oninput="calculateTotal()" ><i>(per kg)</i>
             </div>
@@ -218,7 +205,7 @@ try {
             </div>	-->
 			<div class="form-group">
                 <label for="itemimage">Total Amount:</label>
-                <input type="text" class="form-control" id="totalamt"   name="totalamt" disabled="disabled" >
+                <input type="text" class="form-control" id="totalamt"   name="totalamt" readonly >
             </div>
 			<input type="submit" value="Submit" id="btnSubmit">
         </form>
@@ -226,22 +213,17 @@ try {
     </div>
 
   </div>
-  <!-- wrapper and -->
-
-
-  <!-- Option 2: jQuery, Popper.js, and Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script> 
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
-<!--https://www.geeksforgeeks.org/form-validation-using-jquery/--> <!--// jquery validation code download-->
+<?php require_once('footer.php'); ?>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <script>
+
         function calculateTotal() {
             let price = parseFloat(document.getElementById('price').value) || 0;
             let quantity = parseFloat(document.getElementById('quantity').value) || 0;
             let total = price * quantity;
-            document.getElementById('totalamt').value = total.toFixed(2);
+           // document.getElementById('totalamt').value = total.toFixed(2);
+			document.getElementById('totalamt').value = Math.round(total);;
         }
 		
 		function setfarmersname()
@@ -258,7 +240,59 @@ try {
         $("#sidebar").toggleClass('active');
       });
 	  
-	  $('#itemcode').on('blur',function()
+	  
+	      // Autocomplete functionality for item names
+    var availableItems = []; // This will store all the available item names from the autocomplete
+    $('#itemname').autocomplete({
+        source: function(request, response) {
+            // AJAX call to fetch item names based on user input
+            $.ajax({
+                url: 'get_item_names.php', // PHP script to fetch item names
+                method: 'GET',
+                data: { term: request.term }, // Send user input as the term
+                success: function(data) {
+				//alert(data);
+				 availableItems = JSON.parse(data).map(item => item.value); // Store the item names
+                   response(JSON.parse(data)); // Parse and send the response to the autocomplete widget
+					//response(data);
+                }
+            });
+        },
+        minLength: 1, // Minimum characters before triggering autocomplete
+        select: function(event, ui) {
+            // When an item name is selected, auto-fetch the corresponding item code
+            var selectedItem = ui.item.value;
+            $.ajax({
+                url: 'get_item_code.php', // PHP script to fetch the item code
+                method: 'GET',
+                data: { item_name: selectedItem },
+                success: function(data) {
+				//alert("hereitemcode");
+			//	alert(data);
+                    var result = JSON.parse(data);
+					//alert(result.item_code);
+                    $('#itemcode').val(result.item_code); // Set the item code in the input field
+					$('#itemcodeid').val(result.id); // Set the item code in the input field
+                },
+				//error: function() { alert("error"); }
+            });
+        }
+    });
+
+    // Validate if the input is from the autocomplete list only
+    $('#itemname').change(function() {
+        var enteredValue = $(this).val();
+        if (!availableItems.includes(enteredValue)) {
+            // Clear the input field or show an error
+            alert('Please select item name from the list.');
+            $(this).val(''); // Clear the field
+            $('#itemcode').val(''); // Clear the item code field
+        }
+    });
+
+
+
+/*	  $('#itemcode').on('blur',function()
 	  {
 		let itm_code = $(this).val();
 		if(itm_code!=='')
@@ -305,7 +339,7 @@ try {
 			
 		});
 	  
-	  /*$('#price,#quantity').on('blur',function(){
+*/	  /*$('#price,#quantity').on('blur',function(){
 	  
 	  alert("price");
 	  let qty = $('#quantity').val();

@@ -104,6 +104,11 @@ ul ul a {
 #content p {
   text-align: justify;
 }
+ form label.required:after {
+    content: "*";
+    color: red;
+}
+
 
 @media (max-width: 768px) {
   #sidebar {
@@ -118,3 +123,5 @@ ul ul a {
     display: none;
   }
 }
+
+

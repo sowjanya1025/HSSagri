@@ -31,7 +31,7 @@ if(!empty($_POST))
 		$agreementcopynewfilename="";
 		if($Agreementcopy !='')
 		{
-			$allowedExts = array("jpg", "jpeg", "png","gif");
+			$allowedExts = array("jpg", "jpeg", "png","gif","pdf");
 			$extension = pathinfo($Agreementcopy, PATHINFO_EXTENSION);
 			if(in_array($extension, $allowedExts))
 			{
@@ -74,7 +74,7 @@ if(!empty($_POST))
 		$cancelcheqnewfilename="";
 		if($cancelcheq !='')
 		{
-			$allowedExts = array("jpg", "jpeg", "png","gif");
+			$allowedExts = array("jpg", "jpeg", "png","gif","pdf");
 			$extension = pathinfo($Agreementcopy, PATHINFO_EXTENSION);
 			if(in_array($extension, $allowedExts))
 			{
@@ -84,7 +84,7 @@ if(!empty($_POST))
 			}
 		}
 	 //////////////////end cancel cheque //////////
-	 $account->setClient_Onboarding($clienttype,$clname,$contact,$email,$agreementcopynewfilename,$kycFilesSerialized,$acctname,$acctnumber,$ifsccode,$branchname,$cancelcheqnewfilename);  // insert into db
+	 $account->setClient_Onboarding($clienttype,$clname,$contact,$email,$agreementcopynewfilename,$kycFilesSerialized,$acctname,$acctnumber,$ifsccode,$branchname,$cancelcheqnewfilename,$accountId);  // insert into db
 	 header("Location:oreca_onboarding.php?act=1");
 	 
 	 
@@ -98,26 +98,8 @@ if(!empty($_POST))
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
-
-  <!-- cdnjs.com / libraries / fontawesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-  <!-- Option 1: Include in HTML -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
-  <!-- js validation scripts -->
-	<!-- end js validation scripts --> 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" charset="utf-8"></script>
-
-  <!-- css ekternal -->
-  <link rel="stylesheet" href="css/style.css">
-  <title>Oreca Onboarding form</title>
+<?php require_once('header.php'); ?>
+  <title>Oraca Onboarding form</title>
   <style>
     body { background-color: #fafafa;   .redtext{ color: red; .greentext{ color: green;} 
  }
@@ -127,11 +109,7 @@ if(!empty($_POST))
 <body>
   <!-- start wrapper -->
   <div class="wrapper">
-   <nav id="sidebar">
-      <div class="sidebar-header">
-        <h3>Veggies Basket</h3>
-      </div>
-	  <?php require_once('side_bar.php'); ?></nav>
+    <?php require_once('side_bar.php'); ?>
     <div id="content">
       <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
@@ -141,7 +119,8 @@ if(!empty($_POST))
         </div>
       </nav>
       <br><br>
-      <h2>Oreca Onboarding Form</h2>
+      <h2>Oraca Onboarding Form</h2>
+	 <button class="btn btn-dark"><a href="view_oreca.php">View OracaTraders</a></button>
       <div id="carbon-block" class="my-3"></div>
 	  <?php if(!empty($_GET['act']))
 	   {
@@ -154,31 +133,32 @@ if(!empty($_POST))
 		<input type="hidden" name="clientboardingform" value="clientboardingform">
 		<input type="hidden" name="clienttype" value="2">
             <div class="form-group">
-                <label for="fname">Client name:</label>
+                <label for="fname" class="control-label required">Client name:</label>
                 <input type="text" class="form-control" id="clname"
                     placeholder="Enter Name" name="clname" required >
 					<p id="name_err"></p>
             </div>
 			<div class="form-group">
-                <label for="contact">Mobile No:</label>
+                <label for="contact" class="control-label required">Mobile No:</label>
                 <input type="text" class="form-control" id="contact"
                     placeholder="Enter Contact Number" name="contact" maxlength="10" required >
 					<p id="contact_err"></p>
             </div>
             <div class="form-group">
-                <label for="email">Email Id:</label>
+                <label for="email" class="control-label required">Email Id:</label>
                 <input type="email" class="form-control" id="email"
                     placeholder="Enter Email Id" name="email" required >
 					<p id="email_err"></p>
             </div>
 			<div class="form-group">
-                <label for="kyc">KYC documents:<i>(Adhar,Pan and Company details)</i></label>
+                <label for="kyc" class="control-label required">KYC documents:<i>(Adhar,Pan and Company details)</i></label>
                 <input type="file" class="form-control" id="kyc"
                     placeholder="Enter KYC" name="kyc[]" multiple required>
 					<p id="kyc_err"></p>
+					<ul id="fileNames"></ul>
             </div>  
 			<div class="form-group">
-                <label for="Agreementcopy">Agreement Copy:</label>
+                <label for="Agreementcopy" class="control-label required">Agreement Copy:</label>
                 <input type="file" class="form-control" id="Agreementcopy"   name="Agreementcopy" required >
 					<p id="image_err"></p>
             </div>	
@@ -220,22 +200,28 @@ if(!empty($_POST))
     </div>
 
   </div>
-  <!-- wrapper and -->
-
-
-  <!-- Option 2: jQuery, Popper.js, and Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script> 
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
-<!--https://www.geeksforgeeks.org/form-validation-using-jquery/--> <!--// jquery validation code download-->
+<?php require_once('footer.php'); ?>
   <script>
   
     $(document).ready(function() {
       $("#sidebarCollapse").on('click',function() {
         $("#sidebar").toggleClass('active');
       });
+	  
+		$('#kyc').on('change',function()
+	 {
+		const fileNamesList = document.getElementById('fileNames');
+        fileNamesList.innerHTML = ''; // Clear the list before adding new items
+        const files = event.target.files;
+
+        // Loop through the selected files and display their names
+        for (let i = 0; i < files.length; i++) {
+            const li = document.createElement('li');
+            li.textContent = files[i].name;
+            fileNamesList.appendChild(li);
+        }
+	
+	   });
     });
 	
 

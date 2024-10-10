@@ -29,25 +29,7 @@ $itemdata = $account->get_create_ItemData();
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
-
-  <!-- cdnjs.com / libraries / fontawesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-  <!-- Option 1: Include in HTML -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
-  <!-- js validation scripts -->
-	<!-- end js validation scripts --> 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" charset="utf-8"></script>
-
-  <!-- css ekternal -->
-  <link rel="stylesheet" href="css/style.css">
+<?php require_once('header.php'); ?>
   	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
 
   <title>View Page</title>
@@ -60,10 +42,7 @@ $itemdata = $account->get_create_ItemData();
 <body>
   <!-- start wrapper -->
   <div class="wrapper">
-   <nav id="sidebar">
-      <div class="sidebar-header">
-         <h3>Veggies Basket</h3>
-      </div><?php echo include'side_bar.php'; ?></nav>
+    <?php require_once('side_bar.php'); ?>
     <div id="content">
       <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
@@ -73,7 +52,8 @@ $itemdata = $account->get_create_ItemData();
         </div>
       </nav>
       <br><br>
-	   <h3>Items List</h3>
+	   <h3>Items List</h3><br>
+	   <button class="btn btn-dark"><a href="create_item.php">Create New Items</a></button>
       <div id="carbon-block" class="my-3"></div>
 	  	  <?php if(!empty($_GET['act']))
 	   {
@@ -154,16 +134,7 @@ $itemdata = $account->get_create_ItemData();
     </div>
     </div>
   </div>
-  <!-- wrapper and -->
-  <!-- Option 2: jQuery, Popper.js, and Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script> 
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
-<!--https://www.geeksforgeeks.org/form-validation-using-jquery/--> <!--// jquery validation code download-->
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
-
+<?php require_once('footer.php'); ?>
   <script>
   $(function(){
 	$('#table').DataTable({
@@ -179,21 +150,30 @@ $itemdata = $account->get_create_ItemData();
       $("#sidebarCollapse").on('click',function() {
         $("#sidebar").toggleClass('active');
       });
-	  
-	 $('.deleteitemdata').click(function() { 
-		let ccid = $(this).attr('id');
-		$('#del_cmp_id').val(ccid);
-		
 	 
-	 });
+	 /*$(".t_image").on("click", function() {
 	 
-	 $(".t_image").on("click", function() {
+	  alert("sun")
 	   $('#imagepreview').attr('src', $(this).attr('src')); // here asign the image to the modal when the user click the enlarge link
+	   $('#testtext').val($(this).attr('src'));
 	   $('#imagemodal').modal('show'); // imagemodal is the id attribute assigned to the bootstrap modal, then i use the show function
-	});
+	});*/
 	 
 	  
     });
+	
+	$(document).on('click','.t_image',function(e)
+	{
+	   $('#imagepreview').attr('src', $(this).attr('src')); // here asign the image to the modal when the user click the enlarge link
+	   $('#imagemodal').modal('show'); // imagemodal is the id attribute assigned to the bootstrap modal, then i use the show function
+	});
+	
+	$(document).on('click','.deleteitemdata',function(e)
+	{
+		let ccid = $(this).attr('id');
+		$('#del_cmp_id').val(ccid);
+		
+	});
   </script>
 </body>
 </html>

@@ -9,7 +9,7 @@ if(!isset($_SESSION['user_id']))
 	header("Location:index.php");
 }
 
-$itemdata = $account->getGoodsReceive_note();
+$itemdata = $account->getGoodsReceive_note($accountId);
 //print_r($farmerdata);
 
 		if(isset($_POST['del_item']))
@@ -60,10 +60,7 @@ $itemdata = $account->getGoodsReceive_note();
 <body>
   <!-- start wrapper -->
   <div class="wrapper">
-   <nav id="sidebar">
-      <div class="sidebar-header">
-         <h3>Veggies Basket</h3>
-      </div><?php echo include'side_bar.php'; ?></nav>
+    <?php require_once('side_bar.php'); ?>
     <div id="content">
       <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
@@ -88,6 +85,7 @@ $itemdata = $account->getGoodsReceive_note();
     <tr>
       <th scope="col">#</th>
 	  <th scope="col">Farmers name</th>
+	  <th scope="col">Item name</th>
       <th scope="col">Code</th>
 	  <th scope="col">Quantity</th>
 	  <th scope="col">price</th>
@@ -105,6 +103,7 @@ $itemdata = $account->getGoodsReceive_note();
 	   <tr>
       <th scope="row"><?php echo $inc; ?></th>
 	  <td><?php echo htmlspecialchars($cdata['farmers_name']); ?></td>
+	  <td><?php echo htmlspecialchars($cdata['item_name']); ?></td>
 	  <td><?php echo htmlspecialchars($cdata['item_code']); ?></td>
       <td><?php echo htmlspecialchars($cdata['quantity']); ?></td>
 	   <td><?php echo htmlspecialchars($cdata['price']); ?></td>

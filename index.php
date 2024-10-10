@@ -24,7 +24,7 @@ if(!empty($_POST))
 				exit;
 			}else
 			{
-				header("Location:index.php?login=fail");
+				header("Location:index.php?loginerr=fail");
 				exit;
 			}
 			
@@ -123,11 +123,16 @@ if(!empty($_POST))
       </div>
 	  <?php if(!empty($_GET['register']))
 	   {
-	  	 if($_GET['register']==='success')
+	  	 if($_GET['register']=='success')
 		 {			 ?>
 	  		<div class="text-center greentext" style="border:0px solid green"><b>Registered Successfully..pls login</b></div>
 	  <?php } } ?>
-
+	  <?php if(!empty($_GET['loginerr']))
+	   {
+	  	 if($_GET['loginerr']=='fail')
+		 {			 ?>
+	  		<div class="text-center redtext" style="border:0px solid red"><b>Invalid Username/Password</b></div>
+	  <?php } } ?>
       <form id="login-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" role="form" style="display:block;"  method="post">
       <input type="hidden" name="formtype" value="loginform">
         <div class="form-group">

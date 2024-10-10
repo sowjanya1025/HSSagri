@@ -21,7 +21,7 @@ if(!empty($_POST))
 		$itm_qty = isset($_POST['item_qty'])? $_POST['item_qty'] : NULL;
 		$itm_image=isset($_FILES['item_image']['name']) ? $_FILES['item_image']['name'] : NULL;
 		//$kyc = isset($_POST['kyc'])? $_POST['kyc'] : NULL;
-		print_r($_POST);
+		//print_r($_POST);
 		
 		// image upload
 /*		$newfilename="";
@@ -58,6 +58,10 @@ if(!empty($_POST))
 							move_uploaded_file($_FILES["item_image"]["tmp_name"][$key],"images/items/" . $itemfilename);
 							$itemFiles[] = $itemfilename;
 							//$account->setfarmer_Onboarding_kyc($kycfilename,$lastinsert,$accountId);  // insert into db
+					   }else
+					   {
+						  header("Location:create_item.php?act=2");
+						  exit;
 					   }	 
 			}
 	  } 
@@ -68,11 +72,13 @@ if(!empty($_POST))
 		{
 				 //$account->create_Item($itm_name,$itm_code,$itm_qty,$newfilename);  // insert into db
 				 header("Location:create_item.php?act=2");
+				 exit;
 		}
 		else
 		{
-				 $account->create_Item($itm_name,$item_category,$itm_code,$itm_qty,$itemFilesSerialized);  // insert into db
+				 $account->create_Item($itm_name,$item_category,$itm_code,$itm_qty,$itemFilesSerialized,$accountId);  // insert into db
 				 header("Location:create_item.php?act=1");
+				 exit;
 		}
 	}
 	
@@ -85,25 +91,7 @@ $categories_list = $account->getCategories();
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
-
-  <!-- cdnjs.com / libraries / fontawesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-  <!-- Option 1: Include in HTML -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
-  <!-- js validation scripts -->
-	<!-- end js validation scripts --> 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" charset="utf-8"></script>
-
-  <!-- css ekternal -->
-  <link rel="stylesheet" href="css/style.css">
+<?php require_once('header.php'); ?>
   <!--https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_image_gallery //  code downloade -->
   <title>Create item codes</title>
   <style>
@@ -171,10 +159,7 @@ div.desc {
 
   <!-- start wrapper -->
   <div class="wrapper">
-   <nav id="sidebar">
-      <div class="sidebar-header">
-         <h3>Veggies Basket</h3>
-      </div><?php include'side_bar.php'; ?></nav>
+    <?php require_once('side_bar.php'); ?>
     <div id="content">
       <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
@@ -204,7 +189,7 @@ div.desc {
 	   {
 	  	 if($_GET['act']==2)
 		 {			 ?>
-	  		<div class="text-center"><b><span style="color:#FF0000">Error in Uploading the Item..</span></b></div>
+	  		<div class="text-center"><b><span style="color:#FF0000">Error in Uploading the Item..Please upload correct extension image</span></b></div>
 	  <?php } 
 	  } ?>
 
@@ -213,31 +198,31 @@ div.desc {
         <form action="" method="post" enctype="multipart/form-data" id="itemform" >
 		<input type="hidden" name="createitem" value="createitem">
             <div class="form-group">
-                <label for="item_name">Item:</label>
+                <label for="item_name" class="control-label required">Item:</label>
                 <input type="text" class="form-control" id="item_name"
-                    placeholder="Enter item name" name="item_name" required ><i>(eg:Apple,Onions..)</i>
+                    placeholder="Enter item name" name="item_name" required  autocomplete="off" ><i>(eg:Apple,Onions..)</i>
 					<p id="item_nameerr"></p>
             </div>
 			  <div class="form-group">
-                <label for="item_category">Category:</label>
+                <label for="item_category" class="control-label required">Category:</label>
 				<select class="browser-default custom-select" name="item_category" id="item_category" required>
-					<option>Select Category</option>
+					<option value="">Select Category</option>
 				<?php foreach($categories_list as $key=>$val){ ?>
 					<option value="<?php echo $val['id']; ?>"><?php echo ucfirst($val['categoryname']); ?></option>
 				<?php } ?>
 				</select>
-		<p id="item_nameerr"></p>
+		<p id="cat_nameerr"></p>
             </div>
 			<div class="form-group">
-                <label for="item_code">Item code:</label>
+                <label for="item_code" class="control-label required">Item code:</label>
                 <input type="text" class="form-control" id="item_code"
-                    placeholder="Enter Item Code" name="item_code" required><i>(eg:APP001,ONI001)</i>
+                    placeholder="Enter Item Code" name="item_code" required><i>(eg:APP001,ONI001)[To view items code list <a href="view_items.php" style="color:#009933">Click here</a>]</i>
 					<p id="item_codeerr"></p>
             </div>
 			<div class="form-group">
-                <label for="item_image">Item Image:</label>
+                <label for="item_image" class="control-label required">Item Image:</label>
                 <input type="file" class="form-control" id="item_image"
-                     name="item_image[]" multiple  required >
+                     name="item_image[]" multiple  required ><i>upload only(jpg,jpeg,png,gif,webp)</i>
 					<p id="item_imageerr"></p>
             </div>          
 		<input type="button" id="submitbtn" value="Submit">
@@ -246,16 +231,7 @@ div.desc {
     </div>
 
   </div>
-  <!-- wrapper and -->
-
-
-  <!-- Option 2: jQuery, Popper.js, and Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script> 
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
-<!--https://www.geeksforgeeks.org/form-validation-using-jquery/--> <!--// jquery validation code download-->
+<?php require_once('footer.php'); ?>
   <script>
   
     $(document).ready(function() {
@@ -266,11 +242,11 @@ div.desc {
 	 $('#submitbtn').click(function(e){
 	 	let t_name = $("#item_name").val();
 		let t_code = $("#item_code").val();
-	//	let t_qty  = $("#item_qty").val();
+		let t_cat  = $("#item_category").val();
 		let t_image = $("#item_image").val();
 		let namevalidator;
 		let codevalidator;
-	//	let qtyvalidator;
+		let catvalidator;
 		let imagevalidator;
 		
 	 
@@ -292,16 +268,16 @@ div.desc {
 				  $('#item_codeerr').html('');
                   codevalidator = 0;
 				}
-/*                if(t_qty=="")
+                if(t_cat=="")
                 {
-                  $('#item_qtyerr').html('<span class="redtext">Quantity is required</span>');
-                  qtyvalidator = 1;
+                  $('#cat_nameerr').html('<span class="redtext">Category is required</span>');
+                  catvalidator = 1;
                 }else
 				{
-                  $('#item_qtyerr').html('');
-                  qtyvalidator = 0;
+                  $('#cat_nameerr').html('');
+                  catvalidator = 0;
 				}
-*/                if(t_image=="")
+                if(t_image=="")
                 {
                   $('#item_imageerr').html('<span class="redtext">Image is required</span>');
                   imagevalidator = 1;
@@ -314,23 +290,25 @@ div.desc {
 		//let itm_code = $(this).val();
 		if(t_code!=='')
 		{
+	//	alert("here");
 		$.ajax({
 			type:"post",
 			url:"check_itemAvailability.php",
 			data:{id:t_code},
-			//dataType: 'json',
+			dataType: 'json',
 			success:function(response)
 			{
-				if(response == 1)
+				//alert(response);
+				if(response[0] == 1)
 				{
-					$('#item_codeerr').html('<span class="redtext">Code already exists</span>');
+					$('#item_codeerr').html('<span class="redtext"><b>Code already exists</b></span>');
 					codevalidator = 1;
-				}else if(response == 0)
+				}else if(response[0] == 0)
 				{
 					$('#item_codeerr').html('<span class="greentext">Success!!</span>');
 					codevalidator = 0;
 					//alert("namevalidator="+namevalidator+"codevalidator="+codevalidator+"imagevalidator="+imagevalidator);
-					if(namevalidator === 0 && codevalidator === 0 && imagevalidator === 0 )
+					if(namevalidator === 0 && catvalidator === 0 && codevalidator === 0 && imagevalidator === 0 )
 					 {
 						$('#itemform').submit();
 					 }

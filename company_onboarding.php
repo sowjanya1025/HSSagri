@@ -66,7 +66,7 @@ if(!empty($_POST))
 			}
 	  } 
 	 $kycFilesSerialized = serialize($kycFiles);
-	 $insertID  = $account->setCompany_Onboarding($c_name,$c_pan,$c_reg,$c_gst,$c_adhar,$newfilename,$kycFilesSerialized);  // insert into db
+	 $insertID  = $account->setCompany_Onboarding($c_name,$c_pan,$c_reg,$c_gst,$c_adhar,$newfilename,$kycFilesSerialized,$accountId);  // insert into db
 	 header("Location:company_onboarding.php?act=1");
 	}
 	
@@ -78,26 +78,8 @@ if(!empty($_POST))
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
-
-  <!-- cdnjs.com / libraries / fontawesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-  <!-- Option 1: Include in HTML -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
-  <!-- js validation scripts -->
-	<!-- end js validation scripts --> 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" charset="utf-8"></script>
-
-  <!-- css ekternal -->
-  <link rel="stylesheet" href="css/style.css">
-  <title>Company Onboarding form</title>
+<?php require_once('header.php'); ?>
+  <title>Vendor Onboarding form</title>
   <style>
     body { background-color: #fafafa;   .redtext{ color: red; .greentext{ color: green;} 
  }
@@ -107,10 +89,7 @@ if(!empty($_POST))
 <body>
   <!-- start wrapper -->
   <div class="wrapper">
-   <nav id="sidebar">
-      <div class="sidebar-header">
-        <h3>Veggies Basket</h3>
-      </div><?php echo include'side_bar.php'; ?></nav>
+    <?php require_once('side_bar.php'); ?>
     <div id="content">
       <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
@@ -120,7 +99,8 @@ if(!empty($_POST))
         </div>
       </nav>
       <br><br>
-      <h2>Company Onboarding Form</h2>
+      <h2>Vendor Onboarding Form</h2>
+	   <button class="btn btn-dark"><a href="cview.php">View Vendors List</a></button>
       <div id="carbon-block" class="my-3"></div>
 	  <?php if(!empty($_GET['act']))
 	   {
@@ -132,48 +112,49 @@ if(!empty($_POST))
         <form action="#" id="companyboardingform" method="post" enctype="multipart/form-data" >
 		<input type="hidden" name="companyboarding" value="companyboarding">
             <div class="form-group">
-                <label for="fname">Name:</label>
+                <label for="fname" class="control-label required">Name:</label>
                 <input type="text" class="form-control" id="cname"
                     placeholder="Enter Name" name="cname" >
 					<p id="name_err"></p>
             </div>
 			<div class="form-group">
-                <label for="pan">PAN details:</label>
+                <label for="pan" class="control-label required">PAN details:</label>
                 <input type="text" class="form-control" id="pan"
                     placeholder="Enter PAN Id" name="pan" >
 					<p id="pan_err"></p>
             </div>
 						<div class="form-group">
-                <label for="pan">Registration details:</label>
+                <label for="pan" class="control-label required">Registration details:</label>
                 <input type="text" class="form-control" id="reg"
                     placeholder="Enter Registration details" name="reg" >
 					<p id="reg_err"></p>
             </div>
 
 			<div class="form-group">
-                <label for="pan">GST:</label>
+                <label for="pan" class="control-label required">GST:</label>
                 <input type="text" class="form-control" id="gst"
                     placeholder="Enter GST" name="gst" >
 					<p id="gst_err"></p>
             </div>
 
 			<div class="form-group">
-                <label for="adhar">Adhar details:</label>
+                <label for="adhar" class="control-label required">Adhar details:</label>
                 <input type="text" class="form-control" id="adhar"
                     placeholder="Enter Adhar Id" name="adhar" >
 					<p id="adhar_err"></p>
             </div>  
 			<div class="form-group">
-                <label for="image">Cancel Cheque Image Upload:</label>
+                <label for="image" >Cancel Cheque Image Upload:</label>
                 <input type="file" class="form-control" id="cheque"
                      name="cheque" >
 					<p id="cheque_err"></p>
             </div>          
 			<div class="form-group">
-                <label for="kyc">KYC documents:</label>
+                <label for="kyc" >KYC documents:</label>
                 <input type="file" class="form-control" id="kyc"
                     placeholder="Enter Adhar Id" name="kyc[]" multiple>
 					<p id="kyc_err"></p>
+					<ul id="fileNames"></ul>
             </div>          
 		<input type="button" id="submitbtn" value="Submit">
         </form>
@@ -181,16 +162,7 @@ if(!empty($_POST))
     </div>
 
   </div>
-  <!-- wrapper and -->
-
-
-  <!-- Option 2: jQuery, Popper.js, and Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script> 
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
-<!--https://www.geeksforgeeks.org/form-validation-using-jquery/--> <!--// jquery validation code download-->
+<?php require_once('footer.php'); ?>
   <script>
   
     $(document).ready(function() {
@@ -250,10 +222,10 @@ if(!empty($_POST))
 			adharError = false; 
 			//return false;
 		}
-		if(cheque.length == "")
+		/*if(cheque.length == "")
 		{
 			$('#cheque_err').html('<span class="redtext">cancel cheque is required</span>');
-			adharError = false; 
+			chequeError = false; 
 			//return false;
 		}
 
@@ -262,10 +234,11 @@ if(!empty($_POST))
 			$('#kyc_err').html('<span class="redtext">KYC is required</span>');
 			kycError = false; 
 			//return false;
-		}
+		}*/
 
 		//validateUsername();
-		if( usernameError == true && panError == true && adharError == true  )
+		//if( usernameError == true && panError == true && regError == true &&  gstError == true && adharError == true && chequeError == true && kycError == true)
+		if( usernameError == true && panError == true && regError == true &&  gstError == true && adharError == true)
 		{
 			$('#companyboardingform').submit();
 		}
@@ -275,6 +248,20 @@ if(!empty($_POST))
 		}
 	
 	});
+		$('#kyc').on('change',function()
+	 {
+		const fileNamesList = document.getElementById('fileNames');
+        fileNamesList.innerHTML = ''; // Clear the list before adding new items
+        const files = event.target.files;
+
+        // Loop through the selected files and display their names
+        for (let i = 0; i < files.length; i++) {
+            const li = document.createElement('li');
+            li.textContent = files[i].name;
+            fileNamesList.appendChild(li);
+        }
+	
+	   });
 
 });
 
